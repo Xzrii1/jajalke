@@ -72,10 +72,10 @@ export default function SiswaTransaksi() {
   const jumlahDenda = transaksi.reduce((sum, t) => sum + t.denda, 0);
 
   return (
-    <div className="space-y-5">
+    <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Peminjaman Saya</h1>
+          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Peminjaman Saya</h1>
           <p className="mt-1 text-sm text-slate-500">
             {aktif.length} buku sedang dipinjam · total denda {formatRupiah(jumlahDenda)}
           </p>
@@ -151,7 +151,6 @@ export default function SiswaTransaksi() {
           {loading && <Spinner />}
           {!loading && transaksi.length === 0 && (
             <EmptyState
-              icon="📖"
               title="Belum ada peminjaman"
               description="Kunjungi menu Cari Buku untuk meminjam buku pertama kamu."
             />

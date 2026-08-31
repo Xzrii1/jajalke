@@ -127,10 +127,10 @@ export default function AdminAnggota() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Kelola Anggota</h1>
+          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Kelola Anggota</h1>
           <p className="mt-1 text-sm text-slate-500">{anggota.length} siswa terdaftar</p>
         </div>
         <Button onClick={openCreate}>+ Tambah Anggota</Button>
@@ -197,7 +197,6 @@ export default function AdminAnggota() {
           {loading && <Spinner />}
           {!loading && anggota.length === 0 && (
             <EmptyState
-              icon="👥"
               title="Belum ada anggota"
               description="Tambahkan anggota baru atau ubah kata kunci pencarian."
             />

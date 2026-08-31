@@ -25,21 +25,21 @@ export function LoginForm({
         </div>
       )}
 
-      <div className="mb-5 grid grid-cols-2 gap-1 rounded-xl bg-slate-100 p-1">
+      <div className="mb-5 grid grid-cols-2 gap-1 rounded-full bg-slate-900/[0.06] p-1">
         {(
           [
-            ["siswa", "🧑‍🎓  Siswa"],
-            ["admin", "🛡️  Admin"],
+            ["siswa", "Siswa"],
+            ["admin", "Admin"],
           ] as const
         ).map(([value, label]) => (
           <button
             key={value}
             type="button"
             onClick={() => setRole(value)}
-            className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${
+            className={`rounded-full px-3 py-2 text-sm font-semibold transition-all duration-200 ${
               role === value
                 ? "bg-white text-indigo-700 shadow-sm"
-                : "text-slate-500 hover:text-slate-700"
+                : "text-slate-500 hover:text-slate-800"
             }`}
           >
             {label}

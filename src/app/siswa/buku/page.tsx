@@ -69,9 +69,9 @@ export default function SiswaBuku() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="anim-rise space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Cari &amp; Pinjam Buku</h1>
+        <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Cari &amp; Pinjam Buku</h1>
         <p className="mt-1 text-sm text-slate-500">
           Temukan buku perpustakaan berdasarkan judul, penulis, kategori, atau ISBN.
         </p>
@@ -120,15 +120,18 @@ export default function SiswaBuku() {
       ) : buku.length === 0 ? (
         <Card>
           <EmptyState
-            icon="🔎"
             title="Buku tidak ditemukan"
             description="Coba ubah kata kunci pencarian atau filter kategori."
           />
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {buku.map((b) => (
-            <Card key={b.id} className="flex flex-col">
+          {buku.map((b, i) => (
+            <Card
+              key={b.id}
+              className="anim-rise card-lift flex flex-col"
+              style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}
+            >
               <div className="flex items-start justify-between gap-2">
                 <h3 className="font-semibold text-slate-900">{b.judul}</h3>
                 {b.kategori ? <Badge tone="aktif">{b.kategori}</Badge> : null}

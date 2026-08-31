@@ -1,5 +1,6 @@
 import type {
   ButtonHTMLAttributes,
+  CSSProperties,
   InputHTMLAttributes,
   ReactNode,
   SelectHTMLAttributes,
@@ -59,7 +60,7 @@ export function Button({
   return (
     <button
       {...props}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-1 ${variantClass[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:active:scale-100 disabled:opacity-60 focus:outline-none focus:ring-2 focus:ring-offset-1 ${variantClass[variant]} ${className}`}
     />
   );
 }
@@ -67,12 +68,15 @@ export function Button({
 export function Card({
   children,
   className = "",
+  style,
 }: {
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }) {
   return (
     <div
+      style={style}
       className={`rounded-xl border border-slate-200 bg-white p-5 shadow-sm ${className}`}
     >
       {children}
@@ -156,20 +160,22 @@ export function Spinner({ label = "Memuat..." }: { label?: string }) {
 }
 
 export function EmptyState({
-  icon = "📭",
   title,
   description,
 }: {
-  icon?: string;
   title: string;
   description?: string;
 }) {
   return (
-    <div className="py-12 text-center">
-      <div className="text-3xl">{icon}</div>
-      <p className="mt-2 text-sm font-medium text-slate-700">{title}</p>
+    <div className="flex flex-col items-center py-12 text-center">
+      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+        <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </span>
+      <p className="mt-4 text-sm font-semibold text-slate-700">{title}</p>
       {description && (
-        <p className="mt-1 text-sm text-slate-500">{description}</p>
+        <p className="mt-1 max-w-sm text-sm text-slate-500">{description}</p>
       )}
     </div>
   );

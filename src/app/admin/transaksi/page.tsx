@@ -205,10 +205,10 @@ export default function AdminTransaksi() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Transaksi Peminjaman</h1>
+          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Transaksi Peminjaman</h1>
           <p className="mt-1 text-sm text-slate-500">
             Kelola seluruh peminjaman dan pengembalian buku.
           </p>
@@ -307,7 +307,6 @@ export default function AdminTransaksi() {
           {loading && <Spinner />}
           {!loading && transaksi.length === 0 && (
             <EmptyState
-              icon="📑"
               title="Belum ada transaksi"
               description="Buat transaksi peminjaman baru atau coba ubah filter."
             />

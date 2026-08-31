@@ -146,10 +146,10 @@ await refresh();
   const totalStok = buku.reduce((sum, b) => sum + b.stok, 0);
 
   return (
-    <div className="space-y-5">
+    <div className="anim-rise space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Kelola Data Buku</h1>
+          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Kelola Data Buku</h1>
           <p className="mt-1 text-sm text-slate-500">
             {totalJudul} judul · {totalStok} eksemplar tersedia
           </p>
@@ -253,7 +253,6 @@ await refresh();
           {loading && <Spinner />}
           {!loading && buku.length === 0 && (
             <EmptyState
-              icon="📚"
               title="Belum ada buku ditemukan"
               description="Coba ubah kata kunci pencarian atau tambahkan buku baru."
             />
