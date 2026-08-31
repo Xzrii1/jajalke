@@ -3,7 +3,7 @@
  *
  * Cara pakai:
  *   1. Isi .env.local: ADMIN_SEED_USERNAME, ADMIN_SEED_PASSWORD,
- *      NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY (atau SUPABASE_SERVICE_ROLE_KEY)
+ *      SUPABASE_URL, SUPABASE_ANON_KEY (atau SUPABASE_SERVICE_ROLE_KEY)
  *   2. npm run seed:admin
  */
 import { readFileSync } from "node:fs";
@@ -27,14 +27,14 @@ function loadEnv() {
 
 const env = loadEnv();
 
-const url = env.NEXT_PUBLIC_SUPABASE_URL;
-const key = env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const url = env.SUPABASE_URL;
+const key = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
 const username = (env.ADMIN_SEED_USERNAME || "").trim();
 const password = env.ADMIN_SEED_PASSWORD || "";
 
 if (!url || !key) {
   console.error(
-    "✗ NEXT_PUBLIC_SUPABASE_URL dan (SUPABASE_SERVICE_ROLE_KEY | NEXT_PUBLIC_SUPABASE_ANON_KEY) harus diisi di .env.local"
+    "✗ SUPABASE_URL dan (SUPABASE_SERVICE_ROLE_KEY | SUPABASE_ANON_KEY) harus diisi di .env.local"
   );
   process.exit(1);
 }

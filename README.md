@@ -86,15 +86,17 @@ cp .env.example .env.local
 Isi `.env.local`:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=          # Project Settings > API > Project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=     # Project Settings > API > anon public key
-SUPABASE_SERVICE_ROLE_KEY=         # Service role key (khusus script seed)
-AUTH_SECRET=                       # openssl rand -base64 32
-ADMIN_SEED_USERNAME=admin          # username admin yang diinginkan
-ADMIN_SEED_PASSWORD=Ganti123!      # password admin yang diinginkan
+SUPABASE_URL=                    # Project Settings > API > Project URL
+SUPABASE_ANON_KEY=               # Project Settings > API > anon public key
+SUPABASE_SERVICE_ROLE_KEY=       # Service role key (khusus script seed)
+AUTH_SECRET=                     # openssl rand -base64 32
+ADMIN_SEED_USERNAME=admin        # username admin yang diinginkan
+ADMIN_SEED_PASSWORD=Ganti123!    # password admin yang diinginkan
 ```
 
 > **Jangan commit `.env.local`** (sudah di `.gitignore`). Hanya `.env.example` yang masuk repo dan tanpa isi asli.
+>
+> Variabel Supabase **tidak** memakai prefix `NEXT_PUBLIC_` karena seluruh akses ke database hanya terjadi lewat Server Actions (server-side). Ini menjaga URL & key tidak ikut dikirim ke browser. Untuk variabel baru di Next.js, prefix `NEXT_PUBLIC_` hanya diperlukan jika nilainya dibaca langsung di komponen **client**.
 
 ### 2. Buat schema database
 
@@ -140,9 +142,9 @@ Cek error di **browser console** dan terminal setiap langkah.
 
 1. Push repo ke GitHub (lihat [Development](#development)).
 2. Di [vercel.com](https://vercel.com) → **Add New Project → Import** repo ini.
-3. Di tab *Environment Variables*, tambahkan (nilai sama seperti `.env.local`, tanpa `ADMIN_SEED_*`):
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+3. Di tab *Environment Variables*, tambahkan (nilai sama seperti `.env.local`, tanpa `ADMIN_SEED_*`, ketiganya disimpan **Sensitive**):
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
    - `AUTH_SECRET`
 4. **Deploy**. Setelah sukses, pastikan migration + seed admin sudah dijalankan di Supabase (bagian Setup).
 5. Buka URL deploy → login → semua fitur berjalan.
