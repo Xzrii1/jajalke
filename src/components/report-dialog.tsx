@@ -221,75 +221,140 @@ export function ReportDialog({
   return (
     <Modal open={open} onClose={onClose} title="Laporan Transaksi" wide>
       <div className="space-y-4">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label="Jenis Laporan">
-            <Select value={mode} onChange={(e) => setMode(e.target.value as "full" | "range")}>
-              <option value="full">Full (Semua Periode)</option>
-              <option value="range">Rentang Tanggal</option>
-            </Select>
-          </Field>
-          <Field label="Status">
-            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-              {STATUS_OPTIONS.map(([v, l]) => (
-                <option key={v} value={v}>
-                  {l}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          {mode === "range" && (
-            <>
-              <Field label="Dari tanggal">
-                <Input type="date" value={dari} onChange={(e) => setDari(e.target.value)} />
-              </Field>
-              <Field label="Sampai tanggal">
-                <Input type="date" value={sampai} onChange={(e) => setSampai(e.target.value)} />
-              </Field>
-            </>
+        {/* Filter */}
+        <div className="rounded-xl border border-slate-200 p-4">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Konfigurasi Laporan
+          </p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Jenis Laporan">
+              <Select value={mode} onChange={(e) => setMode(e.target.value as "full" | "range")}>
+                <option value="full">Full (Semua Periode)</option>
+                <option value="range">Rentang Tanggal</option>
+              </Select>
+            </Field>
+            <Field label="Status">
+              <Select value={status} onChange={(e) => setStatus(e.target.value)}>
+                {STATUS_OPTIONS.map(([v, l]) => (
+                  <option key={v} value={v}>
+                    {l}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            {mode === "range" && (
+              <>
+                <Field label="Dari tanggal">
+                  <Input type="date" value={dari} onChange={(e) => setDari(e.target.value)} />
+                </Field>
+                <Field label="Sampai tanggal">
+                  <Input type="date" value={sampai} onChange={(e) => setSampai(e.target.value)} />
+                </Field>
+              </>
+            )}
+          </div>
+          {error && (
+            <div className="mt-3">
+              <Alert kind="error">{error}</Alert>
+            </div>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" onClick={handleLoad}>
-            Muat Data
-          </Button>
-        </div>
-
-        {error && <Alert kind="error">{error}</Alert>}
-        {loading && <Spinner label="Memuat data laporan..." />}
-
-        {data && (
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm font-semibold text-slate-800">
-              {data.total} transaksi · {reportTitleRange(data.dari, data.sampai)}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">
-              Dipinjam: <b>{data.totalDipinjam}</b> · Dikembalikan:{" "}
-              <b>{data.totalKembali}</b> · Denda: <b>{formatRupiah(data.totalDenda)}</b>
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Button onClick={saveExcel} disabled={loading} className="inline-flex items-center gap-1.5">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M5 17v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
-                </svg>
-                Excel
-              </Button>
-              <Button variant="secondary" onClick={savePdf} disabled={loading} className="inline-flex items-center gap-1.5">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M5 17v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
-                </svg>
-                PDF
-              </Button>
-              <Button variant="secondary" onClick={doPrint} disabled={loading} className="inline-flex items-center gap-1.5">
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-4a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2h-2M6 14h12v7H6v-7z" />
-                </svg>
-                Cetak
-              </Button>
+        {/* Hasil & Aksi */}
+        <div className="rounded-xl border border-slate-200 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Hasil &amp; Unduhan
+              </p>
+              {data ? (
+                <p className="mt-1 text-sm font-semibold text-slate-800">
+                  {data.total} transaksi · {reportTitleRange(data.dari, data.sampai)}
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-slate-400">
+                  Klik{" "}
+                  <button
+                    type="button"
+                    onClick={handleLoad}
+                    className="font-semibold text-indigo-600 hover:underline"
+                  >
+                    Muat Data
+                  </button>{" "}
+                  untuk mengambil data laporan.
+                </p>
+              )}
             </div>
+            <Button variant="secondary" onClick={handleLoad} disabled={loading}>
+              {loading ? "Memuat..." : "Muat Data"}
+            </Button>
           </div>
-        )}
+
+          {loading && (
+            <div className="mt-4">
+              <Spinner label="Memuat data laporan..." />
+            </div>
+          )}
+
+          {data && (
+            <div className="mt-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <Stat label="Total Transaksi" value={String(data.total)} tone="slate" />
+                <Stat label="Dipinjam" value={String(data.totalDipinjam)} tone="indigo" />
+                <Stat label="Dikembalikan" value={String(data.totalKembali)} tone="emerald" />
+                <Stat label="Total Denda" value={formatRupiah(data.totalDenda)} tone="rose" />
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-200 pt-4">
+                <span className="mr-auto text-xs text-slate-400">
+                  Unduh atau cetak laporan berikut:
+                </span>
+                <Button onClick={saveExcel} disabled={loading} className="inline-flex items-center gap-1.5">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M5 17v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
+                  </svg>
+                  Unduh Excel
+                </Button>
+                <Button variant="secondary" onClick={savePdf} disabled={loading} className="inline-flex items-center gap-1.5">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4M5 17v2a1 1 0 001 1h12a1 1 0 001-1v-2" />
+                  </svg>
+                  Unduh PDF
+                </Button>
+                <Button variant="secondary" onClick={doPrint} disabled={loading} className="inline-flex items-center gap-1.5">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 9V3h12v6M6 18H4a2 2 0 01-2-2v-4a2 2 0 012-2h16a2 2 0 012 2v4a2 2 0 01-2 2h-2M6 14h12v7H6v-7z" />
+                  </svg>
+                  Cetak
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </Modal>
+  );
+}
+
+function Stat({
+  label,
+  value,
+  tone,
+}: {
+  label: string;
+  value: string;
+  tone: "slate" | "indigo" | "emerald" | "rose";
+}) {
+  const tones = {
+    slate: "text-slate-800",
+    indigo: "text-indigo-600",
+    emerald: "text-emerald-600",
+    rose: "text-rose-600",
+  }[tone];
+  return (
+    <div className="rounded-lg bg-slate-50 px-3 py-2">
+      <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{label}</p>
+      <p className={`mt-0.5 text-lg font-semibold tabular-nums tracking-tight ${tones}`}>{value}</p>
+    </div>
   );
 }
