@@ -9,7 +9,7 @@ import {
   type ReportData,
 } from "@/app/actions/transaksi";
 import { formatRupiah, formatTanggal, todayISO } from "@/lib/utils";
-import { Alert, Button, Field, Input, Modal, Select, Spinner } from "@/components/ui";
+import { Alert, Button, Field, Input, Select, Spinner } from "@/components/ui";
 
 const STATUS_OPTIONS = [
   ["semua", "Semua Status"],
@@ -48,13 +48,7 @@ const XLSX_COLS = [
   { wch: 14 },
 ];
 
-export function ReportDialog({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+export function ReportPanel() {
   const [mode, setMode] = useState<"full" | "range">("full");
   const [dari, setDari] = useState(todayISO());
   const [sampai, setSampai] = useState(todayISO());
@@ -219,8 +213,7 @@ export function ReportDialog({
   }
 
   return (
-    <Modal open={open} onClose={onClose} title="Laporan Transaksi" wide>
-      <div className="space-y-4">
+    <div className="space-y-4">
         {/* Filter */}
         <div className="rounded-xl border border-slate-200 p-4">
           <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -331,8 +324,7 @@ export function ReportDialog({
             </div>
           )}
         </div>
-      </div>
-    </Modal>
+    </div>
   );
 }
 
