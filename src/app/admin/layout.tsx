@@ -1,5 +1,5 @@
 import { AppNav } from "@/components/app-nav";
-import { requireAdmin } from "@/lib/auth";
+import { requirePetugasAdmin } from "@/lib/auth";
 
 export const metadata = {
   title: "Perpustakaan Sekolah Digital",
@@ -11,13 +11,14 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await requireAdmin();
+  const user = await requirePetugasAdmin();
 
   return (
     <div className="min-h-screen bg-slate-50">
       <AppNav
         brand="Perpus Sekolah"
         userLabel={user.nama_lengkap}
+        roleLabel={user.role === "admin" ? "Admin" : "Petugas Perpustakaan"}
         links={[
           { href: "/admin/dashboard", label: "Dashboard" },
           { href: "/admin/buku", label: "Kelola Buku" },

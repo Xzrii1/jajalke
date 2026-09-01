@@ -13,10 +13,12 @@ export function AppNav({
   brand,
   links,
   userLabel,
+  roleLabel,
 }: {
   brand: string;
   links: NavLink[];
   userLabel: string;
+  roleLabel?: string;
 }) {
   const pathname = usePathname();
 
@@ -57,7 +59,15 @@ export function AppNav({
         <div className="ml-auto flex items-center gap-3">
           <div className="hidden text-right sm:block">
             <div className="text-sm font-medium text-slate-900">{userLabel}</div>
-            <div className="text-xs text-slate-500">Perpustakaan Sekolah</div>
+            <div className="text-xs text-slate-500">
+              {roleLabel ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2 py-0.5 font-semibold text-indigo-700">
+                  {roleLabel}
+                </span>
+              ) : (
+                "Perpustakaan Sekolah"
+              )}
+            </div>
           </div>
           <form action={logout}>
             <button

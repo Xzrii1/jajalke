@@ -5,7 +5,7 @@ import type { Role } from "@/lib/types";
 const PUBLIC_PATHS = ["/login", "/daftar"];
 
 function dashboardFor(role: Role): string {
-  return role === "admin" ? "/admin/dashboard" : "/siswa/dashboard";
+  return role === "siswa" ? "/siswa/dashboard" : "/admin/dashboard";
 }
 
 export async function proxy(request: NextRequest) {
@@ -23,7 +23,11 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    if (pathname.startsWith("/admin") && session.role !== "admin") {
+    if (
+      pathname.startsWith("/admin") &&
+      session.role !== "admin" &&
+      session.role !== "petugas"
+    ) {
       return NextResponse.redirect(new URL("/siswa/dashboard", request.url));
     }
     if (pathname.startsWith("/siswa") && session.role !== "siswa") {

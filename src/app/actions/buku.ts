@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin, requireUser } from "@/lib/auth";
+import { requirePetugasAdmin, requireUser } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
 import type { ActionResult, Buku } from "@/lib/types";
 
@@ -60,7 +60,7 @@ export async function getKategoriList(): Promise<string[]> {
 }
 
 export async function createBuku(input: BukuInput): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
 
   const judul = input.judul.trim();
@@ -88,7 +88,7 @@ export async function createBuku(input: BukuInput): Promise<ActionResult> {
 }
 
 export async function updateBuku(id: string, input: BukuInput): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
 
   const judul = input.judul.trim();
@@ -120,7 +120,7 @@ export async function updateBuku(id: string, input: BukuInput): Promise<ActionRe
 }
 
 export async function deleteBuku(id: string): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
 
   const { error } = await getSupabase().from("buku").delete().eq("id", id);

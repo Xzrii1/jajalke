@@ -1,7 +1,7 @@
 "use server";
 
 import { hash } from "bcryptjs";
-import { requireAdmin } from "@/lib/auth";
+import { requirePetugasAdmin } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
 import type { ActionResult, User } from "@/lib/types";
 
@@ -21,7 +21,7 @@ function emptyToNull(v?: string): string | null {
 export async function getAnggotaList(opts: {
   search?: string;
 } = {}): Promise<{ data: User[]; error?: string }> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { data: [], error: CONFIG_ERROR_MESSAGE };
 
   let query = getSupabase()
@@ -53,7 +53,7 @@ export async function getAnggotaList(opts: {
 }
 
 export async function createAnggota(input: AnggotaInput): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
 
   const username = input.username.trim();
@@ -90,8 +90,18 @@ export async function updateAnggota(
   id: string,
   input: { nama_lengkap: string; kelas?: string; no_induk?: string; password?: string }
 ): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+
+  const { data: target, error: targetErr } = await getSupabase()
+    .from("users")
+    .select("id, role")
+    .eq("id", id)
+    .maybeSingle();
+  if (targetErr || !target) return { error: "Anggota tidak ditemukan." };
+  if (target.role !== "siswa") {
+    return { error: "Akun ini tidak dapat dikelola lewat menu Anggota." };
+  }
 
   const namaLengkap = input.nama_lengkap.trim();
   if (!namaLengkap) return { error: "Nama lengkap wajib diisi." };
@@ -115,8 +125,18 @@ export async function updateAnggota(
 }
 
 export async function deleteAnggota(id: string): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+
+  const { data: target, error: targetErr } = await getSupabase()
+    .from("users")
+    .select("id, role")
+    .eq("id", id)
+    .maybeSingle();
+  if (targetErr || !target) return { error: "Anggota tidak ditemukan." };
+  if (target.role !== "siswa") {
+    return { error: "Akun ini tidak dapat dihapus lewat menu Anggota." };
+  }
 
   const { error } = await getSupabase().from("users").delete().eq("id", id);
   if (error) return { error: "Gagal menghapus anggota: " + error.message };

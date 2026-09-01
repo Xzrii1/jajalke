@@ -44,10 +44,12 @@ export async function login(
   }
 
   if (user.role !== role) {
+    const roleLabel =
+      role === "admin" ? "Admin" : role === "petugas" ? "Petugas" : "Siswa";
     return {
       error:
         "Login role tidak cocok dengan akun ini. Pilih tab \u201C" +
-        (role === "admin" ? "Admin" : "Siswa") +
+        roleLabel +
         "\u201D sesuai akunmu atau gunakan akun lain.",
     };
   }
@@ -60,7 +62,7 @@ export async function login(
   });
 
   const target =
-    safeNext(next) ?? (user.role === "admin" ? "/admin/dashboard" : "/siswa/dashboard");
+    safeNext(next) ?? (user.role === "siswa" ? "/siswa/dashboard" : "/admin/dashboard");
   redirect(target);
 }
 

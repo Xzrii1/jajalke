@@ -1,4 +1,4 @@
-export type Role = "admin" | "siswa";
+export type Role = "admin" | "petugas" | "siswa";
 
 export type TransaksiStatus = "dipinjam" | "dikembalikan" | "terlambat";
 

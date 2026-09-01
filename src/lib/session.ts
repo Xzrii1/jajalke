@@ -36,7 +36,9 @@ export async function verifySessionToken(
     if (
       typeof payload.userId !== "string" ||
       typeof payload.role !== "string" ||
-      (payload.role !== "admin" && payload.role !== "siswa")
+      (payload.role !== "admin" &&
+        payload.role !== "petugas" &&
+        payload.role !== "siswa")
     ) {
       return null;
     }

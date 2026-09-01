@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin, requireSiswa } from "@/lib/auth";
+import { requirePetugasAdmin, requireSiswa } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
 import {
   addDays,
@@ -31,7 +31,7 @@ export async function getTransaksiList(opts: {
   search?: string;
   status?: string;
 } = {}): Promise<{ data: Transaksi[]; error?: string }> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { data: [], error: CONFIG_ERROR_MESSAGE };
 
   let query = getSupabase()
@@ -97,7 +97,7 @@ export interface ReportData {
 export async function getTransaksiReport(
   filter: ReportFilter = {}
 ): Promise<{ data?: ReportData; error?: string }> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 
@@ -253,7 +253,7 @@ export interface AdminCreateTransaksi {
 }
 
 export async function createTransaksi(input: AdminCreateTransaksi): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 
@@ -308,7 +308,7 @@ export async function updateTransaksi(
   id: string,
   input: AdminUpdateTransaksi
 ): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 
@@ -372,7 +372,7 @@ export async function updateTransaksi(
 }
 
 export async function deleteTransaksi(id: string): Promise<ActionResult> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 
@@ -406,7 +406,7 @@ export interface AdminStats {
 }
 
 export async function getAdminStats(): Promise<{ data?: AdminStats; error?: string }> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 
@@ -472,7 +472,7 @@ export interface AdminChartData {
 export async function getAdminChartData(
   days = 14
 ): Promise<{ data?: AdminChartData; error?: string }> {
-  await requireAdmin();
+  await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 

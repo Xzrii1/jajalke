@@ -26,9 +26,9 @@ export async function requireUser(): Promise<User> {
   return user;
 }
 
-export async function requireAdmin(): Promise<User> {
+export async function requirePetugasAdmin(): Promise<User> {
   const user = await requireUser();
-  if (user.role !== "admin") redirect("/siswa/dashboard");
+  if (user.role !== "admin" && user.role !== "petugas") redirect("/siswa/dashboard");
   return user;
 }
 

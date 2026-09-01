@@ -22,6 +22,15 @@ function ShieldIcon({ className }: { className?: string }) {
   );
 }
 
+function BadgeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7}>
+      <rect x="5" y="3" width="14" height="18" rx="2" />
+      <path strokeLinecap="round" d="M9 8h6M9 12h6M9 16h3" />
+    </svg>
+  );
+}
+
 function EyeIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7}>
@@ -67,11 +76,12 @@ export function LoginForm({
   next?: string;
 }) {
   const [state, formAction, pending] = useActionState(login, null);
-  const [role, setRole] = useState<"siswa" | "admin">("siswa");
+  const [role, setRole] = useState<"siswa" | "petugas" | "admin">("siswa");
   const [showPass, setShowPass] = useState(false);
 
   const toggleOpts = [
     { value: "siswa" as const, label: "Siswa", Icon: UserIcon },
+    { value: "petugas" as const, label: "Petugas", Icon: BadgeIcon },
     { value: "admin" as const, label: "Admin", Icon: ShieldIcon },
   ];
 
@@ -92,22 +102,20 @@ export function LoginForm({
       )}
 
       {/* Toggle role */}
-      <div className="relative mb-6 flex rounded-2xl bg-slate-100 p-1.5 shadow-inner">
-        <span
-          aria-hidden
-          className={`absolute bottom-1.5 top-1.5 left-1.5 w-[calc(50%-6px)] rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 shadow-md transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-            role === "admin" ? "translate-x-full" : "translate-x-0"
-          }`}
-        />
+      <div role="tablist" aria-label="Pilih peran" className="mb-6 grid grid-cols-3 gap-1.5 rounded-2xl bg-slate-100 p-1.5 shadow-inner">
         {toggleOpts.map(({ value, label, Icon }) => {
           const active = role === value;
           return (
             <button
               key={value}
               type="button"
+              role="tab"
+              aria-selected={active}
               onClick={() => setRole(value)}
-              className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors duration-300 ${
-                active ? "text-white" : "text-slate-500 hover:text-slate-800"
+              className={`relative z-10 inline-flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                active
+                  ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md"
+                  : "text-slate-500 hover:text-slate-800"
               }`}
             >
               <Icon className="h-4 w-4" />
