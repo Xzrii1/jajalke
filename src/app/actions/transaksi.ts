@@ -62,7 +62,10 @@ export async function getTransaksiUser(userId: string): Promise<{
   data: Transaksi[];
   error?: string;
 }> {
-  await requireSiswa();
+  const user = await requireSiswa();
+  if (user.id !== userId) {
+    return { data: [], error: "Tidak dapat mengakses data pengguna lain." };
+  }
   if (!isSupabaseConfigured) return { data: [], error: CONFIG_ERROR_MESSAGE };
 
   const { data, error } = await getSupabase()
@@ -200,7 +203,7 @@ export async function pinjamBuku(bukuId: string, durasiHari = 7): Promise<Action
 }
 
 export async function kembalikanBuku(transaksiId: string): Promise<ActionResult> {
-  await requireSiswa();
+  const user = await requireSiswa();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 
@@ -210,6 +213,9 @@ export async function kembalikanBuku(transaksiId: string): Promise<ActionResult>
     .eq("id", transaksiId)
     .maybeSingle();
   if (trxErr || !trx) return { error: "Transaksi tidak ditemukan." };
+  if (trx.user_id !== user.id) {
+    return { error: "Transaksi ini bukan milikmu." };
+  }
   if (trx.tanggal_kembali) {
     return { error: "Buku ini sudah dikembalikan." };
   }
