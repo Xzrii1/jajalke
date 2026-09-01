@@ -76,14 +76,60 @@ body {
 .anim-rise.d-3 { animation-delay: 0.24s; }
 .anim-rise.d-4 { animation-delay: 0.32s; }
 
+/* ---------------------------------------------------------------------------
+   Animasi tambahan khusus beranda (homepage) yang lebih hidup
+--------------------------------------------------------------------------- */
+@keyframes floaty {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -22px, 0); }
+}
+.anim-float { animation: floaty 7s ease-in-out infinite; }
+.anim-float-slow { animation: floaty 11s ease-in-out infinite; }
+
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.35; }
+  50% { transform: translate(26px, -30px) scale(1.15); opacity: 0.7; }
+  100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
+}
+.anim-drift { animation: drift 14s ease-in-out infinite; }
+.anim-drift-rev { animation: drift 18s ease-in-out infinite reverse; }
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.anim-gradient-text {
+  background-size: 200% auto;
+  animation: gradientMove 6s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.anim-marquee { animation: marquee 32s linear infinite; }
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-2deg); }
+}
+.anim-bob { animation: bob 5s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
   .anim-rise,
   .anim-fade,
-  .anim-chart {
-    animation: none;
+  .anim-chart,
+  .anim-float,
+  .anim-float-slow,
+  .anim-drift,
+  .anim-drift-rev,
+  .anim-gradient-text,
+  .anim-marquee,
+  .anim-bob {
+    animation: none !important;
   }
 }
 
