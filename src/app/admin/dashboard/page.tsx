@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getAdminStats, type AdminStats } from "@/app/actions/transaksi";
 import { Alert, Card, Spinner } from "@/components/ui";
 import { AdminChart } from "@/components/admin-chart";
+import { LiveClock } from "@/components/live-clock";
 
 function StatCard({
   label,
@@ -83,13 +84,16 @@ export default function AdminDashboard() {
 
   return (
     <div className="anim-rise space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
-          Dashboard Admin
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Ringkasan kondisi perpustakaan sekolah.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
+            Dashboard Admin
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Ringkasan kondisi perpustakaan sekolah.
+          </p>
+        </div>
+        <LiveClock />
       </div>
 
       {error && <Alert kind="info">{error}</Alert>}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getSiswaStats, type SiswaStats } from "@/app/actions/transaksi";
 import { Alert, Card, Spinner } from "@/components/ui";
+import { LiveClock } from "@/components/live-clock";
 
 export default function SiswaDashboard() {
   const [stats, setStats] = useState<SiswaStats | null>(null);
@@ -27,15 +28,18 @@ export default function SiswaDashboard() {
 
   return (
     <div className="anim-rise space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
-          Halo, {stats?.user.nama_lengkap.split(" ")[0] ?? "Siswa"}
-        </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          {stats?.user.kelas
-            ? `Kelas ${stats.user.kelas}${stats.user.no_induk ? ` · NIS ${stats.user.no_induk}` : ""}`
-            : "Anggota perpustakaan sekolah."}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
+            Halo, {stats?.user.nama_lengkap.split(" ")[0] ?? "Siswa"}
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {stats?.user.kelas
+              ? `Kelas ${stats.user.kelas}${stats.user.no_induk ? ` · NIS ${stats.user.no_induk}` : ""}`
+              : "Anggota perpustakaan sekolah."}
+          </p>
+        </div>
+        <LiveClock />
       </div>
 
       {error && <Alert kind="info">{error}</Alert>}
