@@ -387,3 +387,59 @@ export async function getSiswaStats(): Promise<{ data?: SiswaStats; error?: stri
     },
   };
 }
+
+export interface AdminChartData {
+  dates: string[];
+  pinjam: number[];
+  kembali: number[];
+}
+
+export async function getAdminChartData(
+  days = 14
+): Promise<{ data?: AdminChartData; error?: string }> {
+  await requireAdmin();
+  if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  const sb = getSupabase();
+
+  const start = toISODate(addDays(new Date(), -(days - 1)));
+  const end = todayISO();
+
+  const [pinjamRes, kembaliRes] = await Promise.all([
+    sb
+      .from("transaksi")
+      .select("tanggal_pinjam")
+      .gte("tanggal_pinjam", start)
+      .lte("tanggal_pinjam", end),
+    sb
+      .from("transaksi")
+      .select("tanggal_kembali")
+      .gte("tanggal_kembali", start)
+      .lte("tanggal_kembali", end)
+      .not("tanggal_kembali", "is", null),
+  ]);
+
+  if (pinjamRes.error) return { error: pinjamRes.error.message };
+  if (kembaliRes.error) return { error: kembaliRes.error.message };
+
+  const indexes = new Map<string, number>();
+  const dates: string[] = [];
+  for (let d = 0; d < days; d++) {
+    const iso = toISODate(addDays(new Date(), d - (days - 1)));
+    indexes.set(iso, d);
+    dates.push(iso);
+  }
+
+  const pinjam = new Array(days).fill(0);
+  const kembali = new Array(days).fill(0);
+
+  for (const row of pinjamRes.data ?? []) {
+    const i = indexes.get(row.tanggal_pinjam);
+    if (i !== undefined) pinjam[i] += 1;
+  }
+  for (const row of kembaliRes.data ?? []) {
+    const i = indexes.get(row.tanggal_kembali);
+    if (i !== undefined) kembali[i] += 1;
+  }
+
+  return { data: { dates, pinjam, kembali } };
+}

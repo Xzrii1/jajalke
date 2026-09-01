@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAdminStats, type AdminStats } from "@/app/actions/transaksi";
 import { Alert, Card, Spinner } from "@/components/ui";
+import { AdminChart } from "@/components/admin-chart";
 
 function StatCard({
   label,
@@ -95,12 +96,16 @@ export default function AdminDashboard() {
 
       {stats && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total Judul Buku" value={stats.totalBuku} icon={statIcons.buku} href="/admin/buku" />
-          <StatCard label="Total Stok Buku" value={stats.totalStok} icon={statIcons.stok} href="/admin/buku" />
-          <StatCard label="Jumlah Anggota" value={stats.totalAnggota} icon={statIcons.anggota} href="/admin/anggota" />
-          <StatCard label="Peminjaman Aktif" value={stats.transaksiAktif} icon={statIcons.aktif} href="/admin/transaksi" />
+          <div className="anim-rise d-1"><StatCard label="Total Judul Buku" value={stats.totalBuku} icon={statIcons.buku} href="/admin/buku" /></div>
+          <div className="anim-rise d-2"><StatCard label="Total Stok Buku" value={stats.totalStok} icon={statIcons.stok} href="/admin/buku" /></div>
+          <div className="anim-rise d-3"><StatCard label="Jumlah Anggota" value={stats.totalAnggota} icon={statIcons.anggota} href="/admin/anggota" /></div>
+          <div className="anim-rise d-4"><StatCard label="Peminjaman Aktif" value={stats.transaksiAktif} icon={statIcons.aktif} href="/admin/transaksi" /></div>
         </div>
       )}
+
+      <Card className="anim-chart card-lift p-5 sm:p-6">
+        <AdminChart />
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="card-lift">
