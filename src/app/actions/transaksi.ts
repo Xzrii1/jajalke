@@ -75,10 +75,15 @@ export async function getTransaksiUser(userId: string): Promise<{
   return { data: (data as Transaksi[]).map(mapRow) };
 }
 
-export async function pinjamBuku(bukuId: string): Promise<ActionResult> {
+export async function pinjamBuku(bukuId: string, durasiHari = 7): Promise<ActionResult> {
   const user = await requireSiswa();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
+
+  const durasi = Math.floor(Number(durasiHari));
+  if (!Number.isFinite(durasi) || durasi < 1 || durasi > 14) {
+    return { error: "Durasi peminjaman harus antara 1 sampai 14 hari." };
+  }
 
   const { data: buku, error: bukuErr } = await sb
     .from("buku")
@@ -102,7 +107,7 @@ export async function pinjamBuku(bukuId: string): Promise<ActionResult> {
 
   const now = new Date();
   const tanggalPinjam = toISODate(now);
-  const jatuhTempo = toISODate(addDays(now, 7));
+  const jatuhTempo = toISODate(addDays(now, durasi));
 
   const { error: stokErr } = await sb
     .from("buku")
@@ -126,7 +131,7 @@ export async function pinjamBuku(bukuId: string): Promise<ActionResult> {
   }
 
   return {
-    success: `Berhasil meminjam "${buku.judul}". Jatuh tempo ${jatuhTempo}.`,
+    success: `Berhasil meminjam "${buku.judul}" selama ${durasi} hari. Jatuh tempo ${jatuhTempo}.`,
   };
 }
 

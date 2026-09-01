@@ -24,6 +24,7 @@ export default function SiswaBuku() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<ActionResult | null>(null);
   const [peminjam, setPeminjam] = useState<string | null>(null);
+  const [durations, setDurations] = useState<Record<string, number>>({});
 
   const fetchList = useCallback(
     () => getBukuList({ search, kategori: kategoriFilter || undefined }),
@@ -60,9 +61,9 @@ export default function SiswaBuku() {
     }
   }, [message]);
 
-  async function handlePinjam(b: Buku) {
+  async function handlePinjam(b: Buku, durasi: number) {
     setPeminjam(b.id);
-    const res = await pinjamBuku(b.id);
+    const res = await pinjamBuku(b.id, durasi);
     setMessage(res);
     setPeminjam(null);
     await refresh();
@@ -145,19 +146,35 @@ export default function SiswaBuku() {
                 <p className="mt-2 line-clamp-3 text-sm text-slate-600">{b.deskripsi}</p>
               )}
               {b.isbn && <p className="mt-1 text-xs text-slate-400">ISBN {b.isbn}</p>}
-              <div className="mt-4 flex items-center justify-between gap-2 pt-3">
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 pt-3">
                 {b.stok > 0 ? (
                   <Badge tone="tersedia">{b.stok} tersedia</Badge>
                 ) : (
                   <Badge tone="habis">Stok habis</Badge>
                 )}
-                <Button
-                  variant={b.stok > 0 ? "primary" : "secondary"}
-                  onClick={() => handlePinjam(b)}
-                  disabled={b.stok <= 0 || peminjam === b.id}
-                >
-                  {peminjam === b.id ? "Memproses..." : "Pinjam"}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Select
+                    aria-label="Durasi peminjaman"
+                    value={durations[b.id] ?? 7}
+                    disabled={b.stok <= 0}
+                    onChange={(e) =>
+                      setDurations((d) => ({ ...d, [b.id]: Number(e.target.value) }))
+                    }
+                  >
+                    {[3, 7, 14].map((d) => (
+                      <option key={d} value={d}>
+                        {d} hari
+                      </option>
+                    ))}
+                  </Select>
+                  <Button
+                    variant={b.stok > 0 ? "primary" : "secondary"}
+                    onClick={() => handlePinjam(b, durations[b.id] ?? 7)}
+                    disabled={b.stok <= 0 || peminjam === b.id}
+                  >
+                    {peminjam === b.id ? "Memproses..." : "Pinjam"}
+                  </Button>
+                </div>
               </div>
             </Card>
           ))}
