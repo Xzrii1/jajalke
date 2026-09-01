@@ -25,7 +25,13 @@ export function LoginForm({
         </div>
       )}
 
-      <div className="mb-5 grid grid-cols-2 gap-1 rounded-full bg-slate-900/[0.06] p-1">
+      <div className="relative mb-5 flex rounded-full bg-slate-900/[0.06] p-1">
+        <span
+          aria-hidden
+          className={`absolute top-1 bottom-1 left-1 w-1/2 rounded-full bg-white shadow-sm transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            role === "admin" ? "translate-x-full" : "translate-x-0"
+          }`}
+        />
         {(
           [
             ["siswa", "Siswa"],
@@ -36,9 +42,9 @@ export function LoginForm({
             key={value}
             type="button"
             onClick={() => setRole(value)}
-            className={`rounded-full px-3 py-2 text-sm font-semibold transition-all duration-200 ${
+            className={`relative z-10 flex-1 rounded-full px-3 py-2 text-sm font-semibold transition-colors duration-300 ${
               role === value
-                ? "bg-white text-indigo-700 shadow-sm"
+                ? "text-indigo-700"
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
