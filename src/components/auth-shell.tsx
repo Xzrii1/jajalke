@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { SchoolBackdrop } from "./school-backdrop";
 import { TiltCard } from "./tilt-card";
+import { loginThemes, type LoginTheme } from "@/lib/login-theme";
 
 export function AuthShell({
   title,
@@ -10,6 +11,7 @@ export function AuthShell({
   children,
   footerHref,
   footerLabel,
+  theme = loginThemes["siswa"],
 }: {
   title: string;
   subtitle: ReactNode;
@@ -17,6 +19,7 @@ export function AuthShell({
   children: ReactNode;
   footerHref: string;
   footerLabel: ReactNode;
+  theme?: LoginTheme;
 }) {
   return (
     <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-12">
@@ -24,9 +27,9 @@ export function AuthShell({
 
       {/* Dekorasi glow lembut di belakang kartu */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-[5]">
-        <div className="absolute -left-24 top-8 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
-        <div className="absolute -right-16 top-1/3 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl" />
+        <div className={`absolute -left-24 top-8 h-72 w-72 rounded-full ${theme.glowA} blur-3xl`} />
+        <div className={`absolute -right-16 top-1/3 h-80 w-80 rounded-full ${theme.glowB} blur-3xl`} />
+        <div className={`absolute bottom-0 left-1/3 h-72 w-72 rounded-full ${theme.glowC} blur-3xl`} />
       </div>
 
       <div className="anim-rise relative w-full max-w-md">
@@ -37,7 +40,7 @@ export function AuthShell({
           >
             <span
               aria-hidden
-              className="absolute -inset-1 -z-10 rounded-3xl bg-gradient-to-br from-indigo-500/50 via-violet-500/40 to-fuchsia-500/40 blur-md"
+              className={`absolute -inset-1 -z-10 rounded-3xl bg-gradient-to-br ${theme.logo} blur-md`}
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -47,7 +50,7 @@ export function AuthShell({
             />
           </span>
           {badge && (
-            <span className="anim-rise mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-100 backdrop-blur">
+            <span className={`anim-rise mt-4 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider ${theme.badge} backdrop-blur`}>
               {badge}
             </span>
           )}
@@ -59,7 +62,7 @@ export function AuthShell({
           </h1>
           <p
             style={{ animationDelay: "210ms" }}
-            className="anim-rise mx-auto mt-2 max-w-sm text-sm leading-relaxed text-indigo-100/80"
+            className={`anim-rise mx-auto mt-2 max-w-sm text-sm leading-relaxed ${theme.subtitle}`}
           >
             {subtitle}
           </p>
@@ -72,7 +75,7 @@ export function AuthShell({
           >
             <div
               aria-hidden
-              className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-indigo-500 via-violet-500 to-fuchsia-500"
+              className={`absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r ${theme.accent}`}
             />
             {children}
           </div>

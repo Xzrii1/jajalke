@@ -1,5 +1,4 @@
-import { AuthShell } from "@/components/auth-shell";
-import { LoginForm } from "@/components/login-form";
+import { LoginPageContent } from "@/components/login-page";
 
 export default async function LoginPage({
   searchParams,
@@ -8,20 +7,5 @@ export default async function LoginPage({
 }) {
   const { registered, next } = await searchParams;
 
-  return (
-    <AuthShell
-      title="Selamat datang kembali"
-      subtitle={
-        <>
-          Masuk ke perpustakaan digital sekolahmu dan lanjutkan petualangan
-          membacamu.
-        </>
-      }
-      badge="Portal Anggota"
-      footerHref="/"
-      footerLabel="Kembali ke beranda"
-    >
-      <LoginForm registered={registered} next={next} />
-    </AuthShell>
-  );
+  return <LoginPageContent registered={registered} next={next} />;
 }

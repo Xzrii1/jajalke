@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState, useState } from "react";
 import { login } from "@/app/actions/auth";
 import { Alert } from "@/components/ui";
+import { loginThemes, type LoginTheme } from "@/lib/login-theme";
 
 function UserIcon({ className }: { className?: string }) {
   return (
@@ -58,10 +59,10 @@ function LockIcon({ className }: { className?: string }) {
   );
 }
 
-function inputBox(hasIcon: boolean) {
+function inputBox(hasIcon: boolean, focus: string) {
   return `w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-slate-900
     placeholder:text-slate-400 shadow-sm transition
-    focus:outline-none focus:ring-2 focus:ring-indigo-500/80 focus:border-indigo-500
+    focus:outline-none focus:ring-2 ${focus}
     ${hasIcon ? "pl-10" : ""}`;
 }
 
@@ -71,12 +72,17 @@ const fieldLabel =
 export function LoginForm({
   registered,
   next,
+  role,
+  setRole,
+  theme = loginThemes["siswa"],
 }: {
   registered?: string;
   next?: string;
+  role: "siswa" | "petugas" | "admin";
+  setRole: (r: "siswa" | "petugas" | "admin") => void;
+  theme?: LoginTheme;
 }) {
   const [state, formAction, pending] = useActionState(login, null);
-  const [role, setRole] = useState<"siswa" | "petugas" | "admin">("siswa");
   const [showPass, setShowPass] = useState(false);
 
   const toggleOpts = [
@@ -114,7 +120,7 @@ export function LoginForm({
               onClick={() => setRole(value)}
               className={`relative z-10 inline-flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                 active
-                  ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md"
+                  ? `bg-gradient-to-r ${theme.activePill} text-white shadow-md`
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
@@ -141,7 +147,7 @@ export function LoginForm({
               placeholder={`Contoh: ${role === "admin" ? "admin" : "budi2007"}`}
               autoComplete="username"
               required
-              className={inputBox(true)}
+              className={inputBox(true, theme.inputFocus)}
             />
           </div>
         </div>
@@ -159,7 +165,7 @@ export function LoginForm({
               placeholder="••••••••"
               autoComplete="current-password"
               required
-              className={`${inputBox(true)} pr-11`}
+              className={`${inputBox(true, theme.inputFocus)} pr-11`}
             />
             <button
               type="button"
@@ -179,7 +185,7 @@ export function LoginForm({
         <button
           type="submit"
           disabled={pending}
-          className="group relative mt-2 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 transition-all duration-300 hover:shadow-xl hover:shadow-violet-600/40 hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          className={`group relative mt-2 inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r ${theme.submit} px-4 py-3 text-sm font-semibold text-white shadow-lg ${theme.submitShadow} transition-all duration-300 hover:shadow-xl ${theme.submitHoverShadow} hover:brightness-110 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60`}
         >
           <span
             aria-hidden
@@ -209,7 +215,7 @@ export function LoginForm({
         Belum punya akun?{" "}
         <Link
           href="/daftar"
-          className="font-semibold text-indigo-600 underline-offset-4 transition hover:text-indigo-700 hover:underline"
+          className={`font-semibold ${theme.link} underline-offset-4 transition hover:underline`}
         >
           Daftar sebagai siswa
         </Link>
