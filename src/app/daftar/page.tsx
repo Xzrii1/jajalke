@@ -11,11 +11,14 @@ export default function DaftarPage() {
         <div className="mb-6 text-center">
           <span
             style={{ animationDelay: "70ms" }}
-            className="anim-rise mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-white/30 bg-white/15 text-indigo-100 backdrop-blur-md"
+            className="anim-rise mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white/90 p-1.5 shadow-lg ring-1 ring-white/60 backdrop-blur"
           >
-            <svg className="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/icon.png"
+              alt="Logo"
+              className="h-full w-full rounded-xl object-cover"
+            />
           </span>
           <h1
             style={{ animationDelay: "140ms" }}
