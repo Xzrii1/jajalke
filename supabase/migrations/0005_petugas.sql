@@ -17,16 +17,17 @@ alter table public.users
 
 -- --- 2) Seed akun petugas --------------------------------------------------------
 -- Username  : petugas1
--- Password  : Pn3IqoU5e-Ienb!p8   (<-- GANTI bila perlu, lalu hash ulang)
+-- Password  : petugas123
 -- Role      : petugas
 -- --------------------------------------------------------------------------------
 insert into public.users (username, nama_lengkap, password_hash, role, kelas, no_induk)
 values (
   'petugas1',
   'Petugas Perpustakaan',
-  '$2b$10$.gt5HTXyDJHv3cSswU/4DeARrULi/NG9fK4fvyv/u.p4WPei60Ly.',
+  '$2b$10$MhVnjDRWm0s5gX/LMQs7Zu7EBH.g8ifz4JJW2fjkSgnbAjJQIBVn6',
   'petugas',
   null,
   null
 )
-on conflict (username) do nothing;
+on conflict (username) do update
+  set password_hash = excluded.password_hash, nama_lengkap = excluded.nama_lengkap;
