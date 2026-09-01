@@ -115,6 +115,46 @@ body {
 }
 .anim-bob { animation: bob 5s ease-in-out infinite; }
 
+@keyframes tabPop {
+  0% { transform: scale(0.82) translateY(3px); opacity: 0.4; }
+  60% { transform: scale(1.04) translateY(-1px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+.anim-tab-pop { animation: tabPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ---------------------------------------------------------------------------
+   Login form slide transition (capsule role switch)
+--------------------------------------------------------------------------- */
+.anim-slide-out-left {
+  animation: slideOutLeft 0.28s cubic-bezier(0.4, 0, 1, 1) both;
+}
+.anim-slide-in-left {
+  animation: slideInLeft 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.anim-slide-out-right {
+  animation: slideOutRight 0.28s cubic-bezier(0.4, 0, 1, 1) both;
+}
+.anim-slide-in-right {
+  animation: slideInRight 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slideOutLeft {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(-28px); }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideOutRight {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(28px); }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -128,7 +168,12 @@ body {
   .anim-drift-rev,
   .anim-gradient-text,
   .anim-marquee,
-  .anim-bob {
+    .anim-bob,
+    .anim-tab-pop,
+    .anim-slide-out-left,
+    .anim-slide-in-left,
+    .anim-slide-out-right,
+    .anim-slide-in-right {
     animation: none !important;
   }
 }

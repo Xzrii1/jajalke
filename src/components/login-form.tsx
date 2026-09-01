@@ -73,17 +73,21 @@ export function LoginForm({
   registered,
   next,
   role,
+  displayRole,
   setRole,
   theme = loginThemes["siswa"],
 }: {
   registered?: string;
   next?: string;
   role: "siswa" | "petugas" | "admin";
+  displayRole?: "siswa" | "petugas" | "admin";
   setRole: (r: "siswa" | "petugas" | "admin") => void;
   theme?: LoginTheme;
 }) {
   const [state, formAction, pending] = useActionState(login, null);
   const [showPass, setShowPass] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const toggleOpts = [
     { value: "siswa" as const, label: "Siswa", Icon: UserIcon },
@@ -93,6 +97,12 @@ export function LoginForm({
 
   return (
     <div>
+      {/*
+        Re-render the inner section on every role change so the fields
+        remount and the accent/focus colors transition smoothly together
+        with the sliding capsule.
+      */}
+      <div key={displayRole ?? role}>
       {registered && (
         <div className="mb-5">
           <Alert kind="success">
@@ -113,14 +123,14 @@ export function LoginForm({
           const active = role === value;
           return (
             <button
-              key={value}
+              key={`${value}-${active ? "on" : "off"}`}
               type="button"
               role="tab"
               aria-selected={active}
               onClick={() => setRole(value)}
               className={`relative z-10 inline-flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                 active
-                  ? `bg-gradient-to-r ${theme.activePill} text-white shadow-md`
+                  ? `anim-tab-pop bg-gradient-to-r ${theme.activePill} text-white shadow-md`
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
@@ -144,6 +154,8 @@ export function LoginForm({
             <input
               id="username"
               name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder={`Contoh: ${role === "admin" ? "admin" : "budi2007"}`}
               autoComplete="username"
               required
@@ -161,6 +173,8 @@ export function LoginForm({
             <input
               id="password"
               name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               type={showPass ? "text" : "password"}
               placeholder="••••••••"
               autoComplete="current-password"
@@ -204,6 +218,7 @@ export function LoginForm({
           )}
         </button>
       </form>
+      </div>
 
       <div className="mt-6 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-slate-300">
         <span className="h-px flex-1 bg-slate-200" />
