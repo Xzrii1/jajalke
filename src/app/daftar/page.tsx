@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { DaftarForm } from "@/components/daftar-form";
 import { SchoolBackdrop } from "@/components/school-backdrop";
+import { TiltCard } from "@/components/tilt-card";
 
 export default function DaftarPage() {
   return (
@@ -34,12 +35,14 @@ export default function DaftarPage() {
           </p>
         </div>
 
-        <div
-          style={{ animationDelay: "280ms" }}
-          className="anim-rise glass-panel rounded-3xl p-6 sm:p-8"
-        >
-          <DaftarForm />
-        </div>
+        <TiltCard className="will-change-transform">
+          <div
+            style={{ animationDelay: "280ms" }}
+            className="anim-rise glass-panel rounded-3xl p-6 sm:p-8"
+          >
+            <DaftarForm />
+          </div>
+        </TiltCard>
 
         <p
           style={{ animationDelay: "350ms" }}
