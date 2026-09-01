@@ -75,6 +75,70 @@ export async function getTransaksiUser(userId: string): Promise<{
   return { data: (data as Transaksi[]).map(mapRow) };
 }
 
+export interface ReportFilter {
+  dari?: string;
+  sampai?: string;
+  status?: string;
+}
+
+export interface ReportData {
+  transaksi: Transaksi[];
+  dari?: string;
+  sampai?: string;
+  total: number;
+  totalDenda: number;
+  totalDipinjam: number;
+  totalKembali: number;
+}
+
+export async function getTransaksiReport(
+  filter: ReportFilter = {}
+): Promise<{ data?: ReportData; error?: string }> {
+  await requireAdmin();
+  if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  const sb = getSupabase();
+
+  const dari = (filter.dari ?? "").trim();
+  const sampai = (filter.sampai ?? "").trim();
+
+  if ((dari && !/^\d{4}-\d{2}-\d{2}$/.test(dari)) || (sampai && !/^\d{4}-\d{2}-\d{2}$/.test(sampai))) {
+    return { error: "Format tanggal tidak valid." };
+  }
+  if (dari && sampai && sampai < dari) {
+    return { error: "Tanggal 'sampai' tidak boleh sebelum tanggal 'dari'." };
+  }
+
+  let query = sb.from("transaksi").select(BASE_SELECT).order("created_at", { ascending: true });
+
+  if (dari) query = query.gte("tanggal_pinjam", dari);
+  if (sampai) query = query.lte("tanggal_pinjam", sampai);
+
+  if (filter.status && filter.status !== "semua") {
+    if (filter.status === "aktif") {
+      query = query.is("tanggal_kembali", null);
+    } else if (filter.status === "dikembalikan") {
+      query = query.not("tanggal_kembali", "is", null);
+    }
+  }
+
+  const { data, error } = await query;
+  if (error) return { error: error.message };
+
+  const rows = ((data as Transaksi[]) ?? []).map(mapRow);
+
+  return {
+    data: {
+      transaksi: rows,
+      dari: dari || undefined,
+      sampai: sampai || undefined,
+      total: rows.length,
+      totalDenda: rows.reduce((s, r) => s + (r.denda || 0), 0),
+      totalDipinjam: rows.filter((r) => r.status !== "dikembalikan").length,
+      totalKembali: rows.filter((r) => r.status === "dikembalikan").length,
+    },
+  };
+}
+
 export async function pinjamBuku(bukuId: string, durasiHari = 7): Promise<ActionResult> {
   const user = await requireSiswa();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
