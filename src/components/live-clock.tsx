@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+const TIMEZONE = "Asia/Jakarta";
+
 function formatWaktu(d: Date): string {
   return new Intl.DateTimeFormat("id-ID", {
+    timeZone: TIMEZONE,
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
@@ -13,6 +16,7 @@ function formatWaktu(d: Date): string {
 
 function formatTanggal(d: Date): string {
   return new Intl.DateTimeFormat("id-ID", {
+    timeZone: TIMEZONE,
     weekday: "long",
     day: "numeric",
     month: "long",
