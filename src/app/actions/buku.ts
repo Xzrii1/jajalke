@@ -13,6 +13,7 @@ export interface BukuInput {
   kategori?: string;
   stok?: string;
   deskripsi?: string;
+  cover_url?: string;
 }
 
 function emptyToNull(v?: string): string | null {
@@ -79,6 +80,7 @@ export async function createBuku(input: BukuInput): Promise<ActionResult> {
     kategori: emptyToNull(input.kategori),
     stok,
     deskripsi: emptyToNull(input.deskripsi),
+    cover_url: emptyToNull(input.cover_url),
   });
 
   if (error) return { error: "Gagal menyimpan buku: " + error.message };
@@ -108,6 +110,7 @@ export async function updateBuku(id: string, input: BukuInput): Promise<ActionRe
       kategori: emptyToNull(input.kategori),
       stok,
       deskripsi: emptyToNull(input.deskripsi),
+      cover_url: emptyToNull(input.cover_url),
       updated_at: new Date().toISOString(),
     })
     .eq("id", id);

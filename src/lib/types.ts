@@ -22,6 +22,7 @@ export interface Buku {
   kategori: string | null;
   stok: number;
   deskripsi: string | null;
+  cover_url: string | null;
   created_at: string;
   updated_at: string;
 }

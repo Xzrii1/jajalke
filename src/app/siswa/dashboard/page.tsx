@@ -82,7 +82,7 @@ export default function SiswaDashboard() {
           </h2>
           <ol className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-600">
             <li>Buka menu <b className="font-semibold text-slate-800">Cari Buku</b> dan cari buku yang kamu mau.</li>
-            <li>Pilih lama pinjam (3, 7, atau 14 hari) lalu klik <b className="font-semibold text-slate-800">Pinjam</b>.</li>
+            <li>Masukkan lama pinjam (jumlah hari, maks. 30) lalu klik <b className="font-semibold text-slate-800">Pinjam</b>.</li>
             <li>Kembalikan melalui menu <b className="font-semibold text-slate-800">Peminjaman Saya</b> sebelum jatuh tempo agar tidak kena denda.</li>
           </ol>
         </Card>

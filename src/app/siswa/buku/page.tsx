@@ -25,7 +25,6 @@ export default function SiswaBuku() {
   const [message, setMessage] = useState<ActionResult | null>(null);
   const [peminjam, setPeminjam] = useState<string | null>(null);
   const [durations, setDurations] = useState<Record<string, number>>({});
-
   const fetchList = useCallback(
     () => getBukuList({ search, kategori: kategoriFilter || undefined }),
     [search, kategoriFilter]
@@ -133,40 +132,61 @@ export default function SiswaBuku() {
               className="anim-rise card-lift flex flex-col"
               style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}
             >
-              <div className="flex items-start justify-between gap-2">
-                <h3 className="font-semibold text-slate-900">{b.judul}</h3>
-                {b.kategori ? <Badge tone="aktif">{b.kategori}</Badge> : null}
+              <div className="flex gap-4">
+                <div className="shrink-0">
+                  {b.cover_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={b.cover_url}
+                      alt={b.judul}
+                      className="h-32 w-24 rounded-xl border border-slate-200 object-cover shadow-sm"
+                    />
+                  ) : (
+                    <span className="flex h-32 w-24 flex-col items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400">
+                      <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A1.5 1.5 0 0021.75 19.5V4.5A1.5 1.5 0 0020.25 3H3.75A1.5 1.5 0 002.25 4.5v15A1.5 1.5 0 003.75 21z" />
+                      </svg>
+                      <span className="text-[10px]">Tanpa sampul</span>
+                    </span>
+                  )}
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-semibold text-slate-900">{b.judul}</h3>
+                  </div>
+                  {b.kategori ? <Badge tone="aktif" className="mt-1 w-fit">{b.kategori}</Badge> : null}
+                  <p className="mt-2 text-sm text-slate-500">
+                    {b.penulis ?? "Tanpa penulis"}
+                    {b.penerbit ? ` · ${b.penerbit}` : ""}
+                    {b.tahun_terbit ? ` · ${b.tahun_terbit}` : ""}
+                  </p>
+                  {b.deskripsi && (
+                    <p className="mt-1 line-clamp-3 text-sm text-slate-600">{b.deskripsi}</p>
+                  )}
+                </div>
               </div>
-              <p className="mt-1 text-sm text-slate-500">
-                {b.penulis ?? "Tanpa penulis"}
-                {b.penerbit ? ` · ${b.penerbit}` : ""}
-                {b.tahun_terbit ? ` · ${b.tahun_terbit}` : ""}
-              </p>
-              {b.deskripsi && (
-                <p className="mt-2 line-clamp-3 text-sm text-slate-600">{b.deskripsi}</p>
-              )}
-              {b.isbn && <p className="mt-1 text-xs text-slate-400">ISBN {b.isbn}</p>}
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 pt-3">
+              {b.isbn && <p className="mt-3 text-xs text-slate-400">ISBN {b.isbn}</p>}
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
                 {b.stok > 0 ? (
                   <Badge tone="tersedia">{b.stok} tersedia</Badge>
                 ) : (
                   <Badge tone="habis">Stok habis</Badge>
                 )}
                 <div className="flex items-center gap-2">
-                  <Select
-                    aria-label="Durasi peminjaman"
-                    value={durations[b.id] ?? 7}
-                    disabled={b.stok <= 0}
-                    onChange={(e) =>
-                      setDurations((d) => ({ ...d, [b.id]: Number(e.target.value) }))
-                    }
-                  >
-                    {[3, 7, 14].map((d) => (
-                      <option key={d} value={d}>
-                        {d} hari
-                      </option>
-                    ))}
-                  </Select>
+                  <label className="flex items-center gap-1.5 text-xs text-slate-500">
+                    <Input
+                      type="number"
+                      min={1}
+                      max={30}
+                      value={durations[b.id] ?? 7}
+                      disabled={b.stok <= 0}
+                      className="w-16 px-2 py-1.5 text-center text-sm"
+                      onChange={(e) =>
+                        setDurations((d) => ({ ...d, [b.id]: Number(e.target.value) }))
+                      }
+                    />
+                    <span>hari</span>
+                  </label>
                   <Button
                     variant={b.stok > 0 ? "primary" : "secondary"}
                     onClick={() => handlePinjam(b, durations[b.id] ?? 7)}

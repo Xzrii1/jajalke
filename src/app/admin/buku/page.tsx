@@ -33,6 +33,7 @@ interface FormState {
   kategori: string;
   stok: string;
   deskripsi: string;
+  cover_url: string;
 }
 
 const emptyForm: FormState = {
@@ -44,6 +45,7 @@ const emptyForm: FormState = {
   kategori: "",
   stok: "0",
   deskripsi: "",
+  cover_url: "",
 };
 
 export default function AdminBuku() {
@@ -115,6 +117,7 @@ export default function AdminBuku() {
       kategori: b.kategori ?? "",
       stok: String(b.stok),
       deskripsi: b.deskripsi ?? "",
+      cover_url: b.cover_url ?? "",
     });
     setModalOpen(true);
   }
@@ -198,6 +201,7 @@ await refresh();
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead>
               <tr className="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-400">
+                <th className="pb-2 pr-3 font-semibold">Sampul</th>
                 <th className="pb-2 pr-3 font-semibold">Judul</th>
                 <th className="pb-2 pr-3 font-semibold">Penulis</th>
                 <th className="pb-2 pr-3 font-semibold">Kategori</th>
@@ -210,6 +214,20 @@ await refresh();
               {!loading &&
                 buku.map((b) => (
                   <tr key={b.id} className="hover:bg-slate-50">
+                    <td className="py-3 pr-3">
+                      {b.cover_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={b.cover_url}
+                          alt={b.judul}
+                          className="h-14 w-10 rounded object-cover shadow-sm"
+                        />
+                      ) : (
+                        <span className="flex h-14 w-10 items-center justify-center rounded bg-slate-100 text-xs text-slate-300">
+                          -
+                        </span>
+                      )}
+                    </td>
                     <td className="py-3 pr-3">
                       <div className="font-medium text-slate-900">{b.judul}</div>
                       {b.isbn && (
@@ -335,6 +353,31 @@ await refresh();
                 placeholder="Deskripsi singkat buku"
               />
             </Field>
+          </div>
+          <div className="sm:col-span-2">
+            <Field label="Foto Sampul (URL)">
+              <Input
+                value={form.cover_url}
+                onChange={(e) => setForm({ ...form, cover_url: e.target.value })}
+                placeholder="https://.../sampul.jpg"
+              />
+            </Field>
+            {form.cover_url && (
+              <div className="mt-2 flex items-center gap-3 rounded-lg bg-slate-50 p-2">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={form.cover_url}
+                  alt="Pratinjau sampul"
+                  className="h-20 w-14 rounded object-cover shadow-sm"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.opacity = "0.3";
+                  }}
+                />
+                <span className="text-xs text-slate-400">
+                  Pratinjau sampul buku. Kosongkan jika belum ada.
+                </span>
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-5 flex justify-end gap-2">

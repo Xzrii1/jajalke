@@ -81,8 +81,8 @@ export async function pinjamBuku(bukuId: string, durasiHari = 7): Promise<Action
   const sb = getSupabase();
 
   const durasi = Math.floor(Number(durasiHari));
-  if (!Number.isFinite(durasi) || durasi < 1 || durasi > 14) {
-    return { error: "Durasi peminjaman harus antara 1 sampai 14 hari." };
+  if (!Number.isFinite(durasi) || durasi < 1 || durasi > 30) {
+    return { error: "Durasi peminjaman harus antara 1 sampai 30 hari." };
   }
 
   const { data: buku, error: bukuErr } = await sb
