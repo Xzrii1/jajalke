@@ -60,6 +60,17 @@ const statIcons = {
       <path strokeLinecap="round" strokeLinejoin="round" d="M5 5h2v14H5zm4 3h2v8H9zm4-4h2v16h-2zM17 7h2v6h-2z" />
     </svg>
   ),
+  pending: (
+    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2M12 2a10 10 0 100 20 10 10 0 000-20z" />
+    </svg>
+  ),
+  menungguKembali: (
+    <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 12a9 9 0 119 9 9 9 0 01-9-9z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 7v5l3 3" />
+    </svg>
+  ),
 };
 
 export default function AdminDashboard() {
@@ -99,11 +110,13 @@ export default function AdminDashboard() {
       {error && <Alert kind="info">{error}</Alert>}
 
       {stats && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <div className="anim-rise d-1"><StatCard label="Total Judul Buku" value={stats.totalBuku} icon={statIcons.buku} href="/admin/buku" /></div>
-          <div className="anim-rise d-2"><StatCard label="Total Stok Buku" value={stats.totalStok} icon={statIcons.stok} href="/admin/buku" /></div>
-          <div className="anim-rise d-3"><StatCard label="Jumlah Anggota" value={stats.totalAnggota} icon={statIcons.anggota} href="/admin/anggota" /></div>
-          <div className="anim-rise d-4"><StatCard label="Peminjaman Aktif" value={stats.transaksiAktif} icon={statIcons.aktif} href="/admin/transaksi" /></div>
+          <div className="anim-rise d-1"><StatCard label="Total Stok Buku" value={stats.totalStok} icon={statIcons.stok} href="/admin/buku" /></div>
+          <div className="anim-rise d-2"><StatCard label="Jumlah Anggota" value={stats.totalAnggota} icon={statIcons.anggota} href="/admin/anggota" /></div>
+          <div className="anim-rise d-2"><StatCard label="Peminjaman Aktif" value={stats.transaksiAktif} icon={statIcons.aktif} href="/admin/transaksi" /></div>
+          <div className="anim-rise d-3"><StatCard label="Ajuan Pinjam" value={stats.transaksiPending} icon={statIcons.pending} href="/admin/transaksi" /></div>
+          <div className="anim-rise d-3"><StatCard label="Ajuan Kembali" value={stats.menungguKembali} icon={statIcons.menungguKembali} href="/admin/transaksi" /></div>
         </div>
       )}
 

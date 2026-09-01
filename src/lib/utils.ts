@@ -31,12 +31,20 @@ export function diffDays(kembaliISO: string, jatuhTempoISO: string): number {
 
 /**
  * Menentukan status efektif sebuah transaksi.
+ * - 'pending', 'ditolak', 'menunggu_kembali' dipertahankan apa adanya (status keputusan).
  * - Sudah dikembalikan: 'terlambat' bila melampaui jatuh tempo, selain itu 'dikembalikan'.
  * - Belum dikembalikan: 'terlambat' bila sekarang melewati jatuh tempo, selain itu 'dipinjam'.
  */
 export function resolveStatus(
-  t: Pick<Transaksi, "tanggal_kembali" | "tanggal_jatuh_tempo">
+  t: Pick<Transaksi, "status" | "tanggal_kembali" | "tanggal_jatuh_tempo">
 ): TransaksiStatus {
+  if (
+    t.status === "pending" ||
+    t.status === "ditolak" ||
+    t.status === "menunggu_kembali"
+  ) {
+    return t.status;
+  }
   const today = todayISO();
   if (t.tanggal_kembali) {
     return diffDays(t.tanggal_kembali, t.tanggal_jatuh_tempo) > 0
@@ -48,11 +56,13 @@ export function resolveStatus(
 
 /** Denda efektif: dari DB bila sudah dikembalikan, atau hitung ulang bila masih berjalan & terlambat. */
 export function resolveDenda(
-  t: Pick<Transaksi, "tanggal_kembali" | "tanggal_jatuh_tempo" | "denda">
+  t: Pick<Transaksi, "status" | "tanggal_kembali" | "tanggal_jatuh_tempo" | "denda">
 ): number {
   if (t.tanggal_kembali) return t.denda ?? 0;
+  if (t.status === "pending" || t.status === "ditolak") return 0;
+  // menunggu_kembali masih dihitung dendanya karena buku belum benar-benar kembali
   const status = resolveStatus(t);
-  if (status === "terlambat") {
+  if (status === "terlambat" || status === "menunggu_kembali") {
     return diffDays(todayISO(), t.tanggal_jatuh_tempo) * DENDA_PER_HARI;
   }
   return 0;

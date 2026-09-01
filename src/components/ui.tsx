@@ -102,6 +102,9 @@ export function Field({
 }
 
 const badgeStyles: Record<string, string> = {
+  pending: "bg-amber-100 text-amber-800",
+  ditolak: "bg-slate-200 text-slate-600",
+  "menunggu-kembali": "bg-orange-100 text-orange-800",
   dipinjam: "bg-sky-100 text-sky-800",
   dikembalikan: "bg-emerald-100 text-emerald-800",
   terlambat: "bg-rose-100 text-rose-800",

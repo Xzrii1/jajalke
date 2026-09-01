@@ -45,7 +45,7 @@ export default function SiswaDashboard() {
       {error && <Alert kind="info">{error}</Alert>}
 
       {stats && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
           <Link href="/siswa/transaksi">
             <Card className="card-lift h-full hover:border-indigo-300">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -58,6 +58,16 @@ export default function SiswaDashboard() {
           </Link>
           <Link href="/siswa/transaksi">
             <Card className="card-lift h-full hover:border-amber-300">
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Menunggu Persetujuan
+              </p>
+              <p className="mt-1.5 text-3xl font-semibold tracking-tight text-amber-600">
+                {stats.pending}
+              </p>
+            </Card>
+          </Link>
+          <Link href="/siswa/transaksi">
+            <Card className="card-lift h-full hover:border-rose-300">
               <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Terlambat
               </p>
@@ -86,8 +96,10 @@ export default function SiswaDashboard() {
           </h2>
           <ol className="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-slate-600">
             <li>Buka menu <b className="font-semibold text-slate-800">Cari Buku</b> dan cari buku yang kamu mau.</li>
-            <li>Masukkan lama pinjam (jumlah hari, maks. 30) lalu klik <b className="font-semibold text-slate-800">Pinjam</b>.</li>
-            <li>Kembalikan melalui menu <b className="font-semibold text-slate-800">Peminjaman Saya</b> sebelum jatuh tempo agar tidak kena denda.</li>
+            <li>Masukkan lama pinjam (jumlah hari, maks. 30) lalu klik <b className="font-semibold text-slate-800">Ajukan</b>.</li>
+            <li>Permintaanmu berstatus <b className="font-semibold text-amber-600">Menunggu Persetujuan</b> sampai disetujui petugas/admin.</li>
+            <li>Setelah disetujui, kembalikan melalui menu <b className="font-semibold text-slate-800">Peminjaman Saya</b> — klik <b className="font-semibold text-slate-800">Ajukan Kembali</b>.</li>
+            <li>Pengembalianmu juga butuh persetujuan petugas/admin, lalu stok buku baru dihitung kembali.</li>
           </ol>
         </Card>
         <Card>

@@ -192,7 +192,7 @@ export default function SiswaBuku() {
                     onClick={() => handlePinjam(b, durations[b.id] ?? 7)}
                     disabled={b.stok <= 0 || peminjam === b.id}
                   >
-                    {peminjam === b.id ? "Memproses..." : "Pinjam"}
+                    {peminjam === b.id ? "Mengajukan..." : "Ajukan"}
                   </Button>
                 </div>
               </div>

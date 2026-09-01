@@ -14,15 +14,21 @@ import {
 } from "@/components/ui";
 
 const statusTone: Record<TransaksiStatus, string> = {
+  pending: "pending",
   dipinjam: "aktif",
   dikembalikan: "dikembalikan",
   terlambat: "terlambat",
+  ditolak: "ditolak",
+  menunggu_kembali: "menunggu-kembali",
 };
 
 const statusLabel: Record<TransaksiStatus, string> = {
+  pending: "Menunggu Persetujuan",
   dipinjam: "Dipinjam",
   dikembalikan: "Dikembalikan",
   terlambat: "Terlambat",
+  ditolak: "Ditolak",
+  menunggu_kembali: "Menunggu Kembali",
 };
 
 export default function SiswaTransaksi() {
@@ -68,7 +74,13 @@ export default function SiswaTransaksi() {
     await refresh();
   }
 
-  const aktif = transaksi.filter((t) => t.tanggal_kembali === null);
+  const aktif = transaksi.filter(
+    (t) =>
+      t.tanggal_kembali === null &&
+      t.status !== "pending" &&
+      t.status !== "ditolak" &&
+      t.status !== "menunggu_kembali"
+  );
   const jumlahDenda = transaksi.reduce((sum, t) => sum + t.denda, 0);
 
   return (
@@ -132,14 +144,21 @@ export default function SiswaTransaksi() {
                       )}
                     </td>
                     <td className="py-3 text-right">
-                      {t.tanggal_kembali === null ? (
+                      {t.status === "menunggu_kembali" ? (
+                        <span className="text-xs text-orange-600">Menunggu</span>
+                      ) : t.tanggal_kembali === null &&
+                        (t.status === "dipinjam" || t.status === "terlambat") ? (
                         <Button
                           variant="success"
                           onClick={() => handleKembali(t)}
                           disabled={kembalikanId === t.id}
                         >
-                          {kembalikanId === t.id ? "Memproses..." : "Kembalikan"}
+                          {kembalikanId === t.id ? "Mengajukan..." : "Ajukan Kembali"}
                         </Button>
+                      ) : t.status === "pending" ? (
+                        <span className="text-xs text-amber-600">Menunggu</span>
+                      ) : t.status === "ditolak" ? (
+                        <span className="text-xs text-slate-400">Ditolak</span>
                       ) : (
                         <span className="text-xs text-slate-400">Selesai</span>
                       )}

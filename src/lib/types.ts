@@ -1,6 +1,12 @@
 export type Role = "admin" | "petugas" | "siswa";
 
-export type TransaksiStatus = "dipinjam" | "dikembalikan" | "terlambat";
+export type TransaksiStatus =
+  | "pending"
+  | "dipinjam"
+  | "dikembalikan"
+  | "terlambat"
+  | "ditolak"
+  | "menunggu_kembali";
 
 export interface User {
   id: string;

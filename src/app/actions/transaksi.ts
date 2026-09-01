@@ -47,7 +47,13 @@ export async function getTransaksiList(opts: {
   }
   if (opts.status && opts.status !== "semua") {
     if (opts.status === "aktif") {
-      query = query.is("tanggal_kembali", null);
+      query = query.in("status", ["dipinjam", "terlambat"]);
+    } else if (opts.status === "pending") {
+      query = query.eq("status", "pending");
+    } else if (opts.status === "menunggu_kembali") {
+      query = query.eq("status", "menunggu_kembali");
+    } else if (opts.status === "ditolak") {
+      query = query.eq("status", "ditolak");
     } else if (opts.status === "dikembalikan") {
       query = query.not("tanggal_kembali", "is", null);
     }
@@ -118,9 +124,13 @@ export async function getTransaksiReport(
 
   if (filter.status && filter.status !== "semua") {
     if (filter.status === "aktif") {
-      query = query.is("tanggal_kembali", null);
+      query = query.in("status", ["dipinjam", "terlambat"]);
     } else if (filter.status === "dikembalikan") {
       query = query.not("tanggal_kembali", "is", null);
+    } else if (filter.status === "pending") {
+      query = query.eq("status", "pending");
+    } else if (filter.status === "menunggu_kembali") {
+      query = query.eq("status", "menunggu_kembali");
     }
   }
 
@@ -136,7 +146,7 @@ export async function getTransaksiReport(
       sampai: sampai || undefined,
       total: rows.length,
       totalDenda: rows.reduce((s, r) => s + (r.denda || 0), 0),
-      totalDipinjam: rows.filter((r) => r.status !== "dikembalikan").length,
+      totalDipinjam: rows.filter((r) => r.status === "dipinjam" || r.status === "terlambat").length,
       totalKembali: rows.filter((r) => r.status === "dikembalikan").length,
     },
   };
@@ -169,37 +179,98 @@ export async function pinjamBuku(bukuId: string, durasiHari = 7): Promise<Action
     .limit(1);
 
   if (active && active.length > 0) {
-    return { error: "Kamu masih punya peminjaman aktif untuk buku ini. Kembalikan dulu." };
+    return {
+      error:
+        "Kamu masih punya permintaan atau peminjaman aktif untuk buku ini. Tunggu persetujuan atau kembalikan dulu.",
+    };
   }
 
   const now = new Date();
   const tanggalPinjam = toISODate(now);
   const jatuhTempo = toISODate(addDays(now, durasi));
 
-  const { error: stokErr } = await sb
-    .from("buku")
-    .update({ stok: buku.stok - 1, updated_at: now.toISOString() })
-    .eq("id", bukuId);
-  if (stokErr) return { error: "Gagal mengupdate stok: " + stokErr.message };
-
   const { error: trxErr } = await sb.from("transaksi").insert({
     user_id: user.id,
     buku_id: bukuId,
     tanggal_pinjam: tanggalPinjam,
     tanggal_jatuh_tempo: jatuhTempo,
-    status: "dipinjam",
+    status: "pending",
   });
   if (trxErr) {
-    await sb
-      .from("buku")
-      .update({ stok: buku.stok, updated_at: new Date().toISOString() })
-      .eq("id", bukuId);
-    return { error: "Gagal membuat transaksi: " + trxErr.message };
+    return { error: "Gagal mengajukan peminjaman: " + trxErr.message };
   }
 
   return {
-    success: `Berhasil meminjam "${buku.judul}" selama ${durasi} hari. Jatuh tempo ${jatuhTempo}.`,
+    success: `Permintaan peminjaman "${buku.judul}" selama ${durasi} hari diajukan. Menunggu persetujuan petugas/admin.`,
   };
+}
+
+export async function setujuiPeminjaman(transaksiId: string): Promise<ActionResult> {
+  await requirePetugasAdmin();
+  if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  const sb = getSupabase();
+
+  const { data: trx, error: trxErr } = await sb
+    .from("transaksi")
+    .select("*")
+    .eq("id", transaksiId)
+    .maybeSingle();
+  if (trxErr || !trx) return { error: "Transaksi tidak ditemukan." };
+  if (trx.status !== "pending") {
+    return { error: "Transaksi ini bukan permintaan yang menunggu persetujuan." };
+  }
+
+  const { data: buku, error: bukuErr } = await sb
+    .from("buku")
+    .select("stok")
+    .eq("id", trx.buku_id)
+    .maybeSingle();
+  if (bukuErr || !buku) return { error: "Buku terkait tidak ditemukan." };
+  if (buku.stok <= 0) return { error: `Stok buku sudah habis. Permintaan tidak dapat disetujui.` };
+
+  const { error: stokErr } = await sb
+    .from("buku")
+    .update({ stok: buku.stok - 1, updated_at: new Date().toISOString() })
+    .eq("id", trx.buku_id);
+  if (stokErr) return { error: "Gagal update stok: " + stokErr.message };
+
+  const { error: upErr } = await sb
+    .from("transaksi")
+    .update({ status: "dipinjam" })
+    .eq("id", transaksiId);
+  if (upErr) {
+    await sb
+      .from("buku")
+      .update({ stok: buku.stok, updated_at: new Date().toISOString() })
+      .eq("id", trx.buku_id);
+    return { error: "Gagal menyetujui peminjaman: " + upErr.message };
+  }
+
+  return { success: "Peminjaman disetujui. Buku kini berstatus dipinjam." };
+}
+
+export async function tolakPeminjaman(transaksiId: string): Promise<ActionResult> {
+  await requirePetugasAdmin();
+  if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  const sb = getSupabase();
+
+  const { data: trx, error: trxErr } = await sb
+    .from("transaksi")
+    .select("*")
+    .eq("id", transaksiId)
+    .maybeSingle();
+  if (trxErr || !trx) return { error: "Transaksi tidak ditemukan." };
+  if (trx.status !== "pending") {
+    return { error: "Transaksi ini bukan permintaan yang menunggu persetujuan." };
+  }
+
+  const { error: upErr } = await sb
+    .from("transaksi")
+    .update({ status: "ditolak" })
+    .eq("id", transaksiId);
+  if (upErr) return { error: "Gagal menolak peminjaman: " + upErr.message };
+
+  return { success: "Permintaan peminjaman ditolak." };
 }
 
 export async function kembalikanBuku(transaksiId: string): Promise<ActionResult> {
@@ -219,6 +290,39 @@ export async function kembalikanBuku(transaksiId: string): Promise<ActionResult>
   if (trx.tanggal_kembali) {
     return { error: "Buku ini sudah dikembalikan." };
   }
+  if (trx.status === "pending") {
+    return { error: "Peminjaman ini belum disetujui. Tunggu persetujuan petugas/admin." };
+  }
+  if (trx.status === "ditolak") {
+    return { error: "Peminjaman ini telah ditolak." };
+  }
+  if (trx.status === "menunggu_kembali") {
+    return { error: "Pengembalian sudah diajukan. Tunggu persetujuan petugas/admin." };
+  }
+
+  const { error: upErr } = await sb
+    .from("transaksi")
+    .update({ status: "menunggu_kembali" })
+    .eq("id", transaksiId);
+  if (upErr) return { error: "Gagal mengajukan pengembalian: " + upErr.message };
+
+  return { success: "Pengembalian diajukan. Menunggu persetujuan petugas/admin." };
+}
+
+export async function setujuiPengembalian(transaksiId: string): Promise<ActionResult> {
+  await requirePetugasAdmin();
+  if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  const sb = getSupabase();
+
+  const { data: trx, error: trxErr } = await sb
+    .from("transaksi")
+    .select("*")
+    .eq("id", transaksiId)
+    .maybeSingle();
+  if (trxErr || !trx) return { error: "Transaksi tidak ditemukan." };
+  if (trx.status !== "menunggu_kembali") {
+    return { error: "Transaksi ini bukan pengembalian yang menunggu persetujuan." };
+  }
 
   const tanggalKembali = todayISO();
   const hariTelat = diffDays(tanggalKembali, trx.tanggal_jatuh_tempo);
@@ -230,7 +334,7 @@ export async function kembalikanBuku(transaksiId: string): Promise<ActionResult>
     .from("transaksi")
     .update({ tanggal_kembali: tanggalKembali, status, denda })
     .eq("id", transaksiId);
-  if (upErr) return { error: "Gagal update transaksi: " + upErr.message };
+  if (upErr) return { error: "Gagal menyetujui pengembalian: " + upErr.message };
 
   const b = await sb.from("buku").select("stok").eq("id", trx.buku_id).maybeSingle();
   if (!b.data) return { error: "Buku terkait tidak ditemukan." };
@@ -241,8 +345,32 @@ export async function kembalikanBuku(transaksiId: string): Promise<ActionResult>
   if (stokErr) return { error: "Gagal update stok: " + stokErr.message };
 
   return {
-    success: `Buku berhasil dikembalikan${terlambat ? ` (terlambat ${hariTelat} hari, denda Rp ${(denda).toLocaleString("id-ID")})` : ""}.`,
+    success: `Pengembalian disetujui. Buku dikembalikan${terlambat ? ` (terlambat ${hariTelat} hari, denda Rp ${(denda).toLocaleString("id-ID")})` : ""}.`,
   };
+}
+
+export async function tolakPengembalian(transaksiId: string): Promise<ActionResult> {
+  await requirePetugasAdmin();
+  if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  const sb = getSupabase();
+
+  const { data: trx, error: trxErr } = await sb
+    .from("transaksi")
+    .select("*")
+    .eq("id", transaksiId)
+    .maybeSingle();
+  if (trxErr || !trx) return { error: "Transaksi tidak ditemukan." };
+  if (trx.status !== "menunggu_kembali") {
+    return { error: "Transaksi ini bukan pengembalian yang menunggu persetujuan." };
+  }
+
+  const { error: upErr } = await sb
+    .from("transaksi")
+    .update({ status: "dipinjam" })
+    .eq("id", transaksiId);
+  if (upErr) return { error: "Gagal menolak pengembalian: " + upErr.message };
+
+  return { success: "Pengembalian ditolak. Buku tetap berstatus dipinjam." };
 }
 
 export interface AdminCreateTransaksi {
@@ -327,8 +455,8 @@ export async function updateTransaksi(
   if (oldErr || !old) return { error: "Transaksi tidak ditemukan." };
 
   const newKembali = input.tanggal_kembali || null;
-  const wasActive = !old.tanggal_kembali;
-  const nowActive = !newKembali;
+  const wasActive = old.tanggal_kembali === null && old.status !== "pending" && old.status !== "ditolak";
+  const nowActive = !newKembali && old.status !== "pending" && old.status !== "ditolak";
 
   const patch: Record<string, unknown> = {
     tanggal_pinjam: input.tanggal_pinjam,
@@ -383,7 +511,11 @@ export async function deleteTransaksi(id: string): Promise<ActionResult> {
     .maybeSingle();
   if (trxErr || !trx) return { error: "Transaksi tidak ditemukan." };
 
-  if (!trx.tanggal_kembali) {
+  if (
+    !trx.tanggal_kembali &&
+    trx.status !== "pending" &&
+    trx.status !== "ditolak"
+  ) {
     const b = await sb.from("buku").select("stok").eq("id", trx.buku_id).maybeSingle();
     if (b.data) {
       await sb
@@ -403,6 +535,8 @@ export interface AdminStats {
   totalStok: number;
   totalAnggota: number;
   transaksiAktif: number;
+  transaksiPending: number;
+  menungguKembali: number;
 }
 
 export async function getAdminStats(): Promise<{ data?: AdminStats; error?: string }> {
@@ -410,14 +544,16 @@ export async function getAdminStats(): Promise<{ data?: AdminStats; error?: stri
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 
-  const [buku, stok, anggota, aktif] = await Promise.all([
+  const [buku, stok, anggota, aktif, pending, menungguKembali] = await Promise.all([
     sb.from("buku").select("id", { count: "exact", head: true }),
     sb.from("buku").select("stok"),
     sb.from("users").select("id", { count: "exact", head: true }).eq("role", "siswa"),
-    sb.from("transaksi").select("id", { count: "exact", head: true }).is("tanggal_kembali", null),
+    sb.from("transaksi").select("id", { count: "exact", head: true }).in("status", ["dipinjam", "terlambat"]),
+    sb.from("transaksi").select("id", { count: "exact", head: true }).eq("status", "pending"),
+    sb.from("transaksi").select("id", { count: "exact", head: true }).eq("status", "menunggu_kembali"),
   ]);
 
-  if (buku.error || anggota.error || aktif.error) {
+  if (buku.error || anggota.error || aktif.error || pending.error || menungguKembali.error) {
     return { error: "Gagal mengambil statistik." };
   }
 
@@ -432,6 +568,8 @@ export async function getAdminStats(): Promise<{ data?: AdminStats; error?: stri
       totalStok,
       totalAnggota: anggota.count ?? 0,
       transaksiAktif: aktif.count ?? 0,
+      transaksiPending: pending.count ?? 0,
+      menungguKembali: menungguKembali.count ?? 0,
     },
   };
 }
@@ -439,6 +577,7 @@ export async function getAdminStats(): Promise<{ data?: AdminStats; error?: stri
 export interface SiswaStats {
   aktif: number;
   terlambat: number;
+  pending: number;
   total: number;
   user: User;
 }
@@ -450,13 +589,17 @@ export async function getSiswaStats(): Promise<{ data?: SiswaStats; error?: stri
   const { data, error } = await getTransaksiUser(user.id);
   if (error) return { error };
 
-  const aktif = data.filter((t) => t.status !== "dikembalikan");
+  const aktif = data.filter(
+    (t) => t.status === "dipinjam" || t.status === "terlambat"
+  );
   const terlambat = data.filter((t) => t.status === "terlambat");
+  const pending = data.filter((t) => t.status === "pending");
 
   return {
     data: {
       aktif: aktif.length,
       terlambat: terlambat.length,
+      pending: pending.length,
       total: data.length,
       user,
     },

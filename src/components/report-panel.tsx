@@ -15,7 +15,18 @@ const STATUS_OPTIONS = [
   ["semua", "Semua Status"],
   ["aktif", "Peminjaman Aktif"],
   ["dikembalikan", "Dikembalikan"],
+  ["pending", "Menunggu Persetujuan"],
+  ["menunggu_kembali", "Menunggu Kembali"],
 ] as const;
+
+const STATUS_LABELS: Record<string, string> = {
+  pending: "Menunggu",
+  dipinjam: "Dipinjam",
+  dikembalikan: "Dikembalikan",
+  terlambat: "Terlambat",
+  ditolak: "Ditolak",
+  menunggu_kembali: "Menunggu Kembali",
+};
 
 function reportTitleRange(dari?: string, sampai?: string) {
   if (dari && sampai) return `${formatTanggal(dari)} — ${formatTanggal(sampai)}`;
@@ -32,7 +43,7 @@ function buildTableRows(data: ReportData) {
     t.user?.nama_lengkap ?? "-",
     t.user?.kelas ?? "-",
     t.buku?.judul ?? "-",
-    t.status === "dipinjam" ? "Dipinjam" : t.status === "terlambat" ? "Terlambat" : "Dikembalikan",
+    STATUS_LABELS[t.status] ?? t.status,
     t.denda > 0 ? formatRupiah(t.denda) : "-",
   ]);
 }
@@ -155,7 +166,7 @@ export function ReportPanel() {
           <td>${t.user?.nama_lengkap ?? "-"}</td>
           <td>${t.user?.kelas ?? "-"}</td>
           <td>${t.buku?.judul ?? "-"}</td>
-          <td>${t.status}</td>
+          <td>${STATUS_LABELS[t.status] ?? t.status}</td>
           <td>${t.denda > 0 ? formatRupiah(t.denda) : "-"}</td>
         </tr>`
       )

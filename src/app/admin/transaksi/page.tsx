@@ -7,6 +7,10 @@ import {
   createTransaksi,
   deleteTransaksi,
   getTransaksiList,
+  setujuiPeminjaman,
+  setujuiPengembalian,
+  tolakPeminjaman,
+  tolakPengembalian,
   updateTransaksi,
 } from "@/app/actions/transaksi";
 import { formatRupiah, formatTanggal, todayISO } from "@/lib/utils";
@@ -26,15 +30,21 @@ import {
 } from "@/components/ui";
 
 const statusTone: Record<TransaksiStatus, string> = {
+  pending: "pending",
   dipinjam: "aktif",
   dikembalikan: "dikembalikan",
   terlambat: "terlambat",
+  ditolak: "ditolak",
+  menunggu_kembali: "menunggu-kembali",
 };
 
 const statusLabel: Record<TransaksiStatus, string> = {
+  pending: "Menunggu",
   dipinjam: "Dipinjam",
   dikembalikan: "Dikembalikan",
   terlambat: "Terlambat",
+  ditolak: "Ditolak",
+  menunggu_kembali: "Menunggu Kembali",
 };
 
 interface CreateForm {
@@ -82,7 +92,10 @@ export default function AdminTransaksi() {
   const [toDelete, setToDelete] = useState<Transaksi | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const [returning, setReturning] = useState<string | null>(null);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [approvingKembaliId, setApprovingKembaliId] = useState<string | null>(null);
+  const [rejectingKembaliId, setRejectingKembaliId] = useState<string | null>(null);
 
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState<Transaksi | null>(null);
@@ -154,15 +167,35 @@ export default function AdminTransaksi() {
     }
   }
 
-  async function handleReturn(trx: Transaksi) {
-    setReturning(trx.id);
-    const res = await updateTransaksi(trx.id, {
-      tanggal_pinjam: trx.tanggal_pinjam,
-      tanggal_jatuh_tempo: trx.tanggal_jatuh_tempo,
-      tanggal_kembali: todayISO(),
-    });
+  async function handleApprove(trx: Transaksi) {
+    setApprovingId(trx.id);
+    const res = await setujuiPeminjaman(trx.id);
     setMessage(res);
-    setReturning(null);
+    setApprovingId(null);
+    if (res.success) await refresh();
+  }
+
+  async function handleReject(trx: Transaksi) {
+    setRejectingId(trx.id);
+    const res = await tolakPeminjaman(trx.id);
+    setMessage(res);
+    setRejectingId(null);
+    if (res.success) await refresh();
+  }
+
+  async function handleApproveKembali(trx: Transaksi) {
+    setApprovingKembaliId(trx.id);
+    const res = await setujuiPengembalian(trx.id);
+    setMessage(res);
+    setApprovingKembaliId(null);
+    if (res.success) await refresh();
+  }
+
+  async function handleRejectKembali(trx: Transaksi) {
+    setRejectingKembaliId(trx.id);
+    const res = await tolakPengembalian(trx.id);
+    setMessage(res);
+    setRejectingKembaliId(null);
     if (res.success) await refresh();
   }
 
@@ -234,8 +267,11 @@ export default function AdminTransaksi() {
           <div className="sm:w-48">
             <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="semua">Semua Status</option>
+              <option value="pending">Menunggu Persetujuan</option>
               <option value="aktif">Masih Dipinjam</option>
+              <option value="menunggu_kembali">Menunggu Kembali</option>
               <option value="dikembalikan">Sudah Dikembalikan</option>
+              <option value="ditolak">Ditolak</option>
             </Select>
           </div>
         </div>
@@ -276,15 +312,45 @@ export default function AdminTransaksi() {
                     </td>
                     <td className="py-3 text-right">
                       <div className="inline-flex flex-wrap justify-end gap-1">
-                        {t.tanggal_kembali === null && (
-                          <Button
-                            variant="success"
-                            className="px-2 py-1 text-xs"
-                            onClick={() => handleReturn(t)}
-                            disabled={returning === t.id}
-                          >
-                            {returning === t.id ? "..." : "Kembalikan"}
-                          </Button>
+                        {t.status === "pending" && (
+                          <>
+                            <Button
+                              variant="success"
+                              className="px-2 py-1 text-xs"
+                              onClick={() => handleApprove(t)}
+                              disabled={approvingId === t.id || rejectingId === t.id}
+                            >
+                              {approvingId === t.id ? "..." : "Setujui"}
+                            </Button>
+                            <Button
+                              variant="danger"
+                              className="px-2 py-1 text-xs"
+                              onClick={() => handleReject(t)}
+                              disabled={approvingId === t.id || rejectingId === t.id}
+                            >
+                              {rejectingId === t.id ? "..." : "Tolak"}
+                            </Button>
+                          </>
+                        )}
+                        {t.status === "menunggu_kembali" && (
+                          <>
+                            <Button
+                              variant="success"
+                              className="px-2 py-1 text-xs"
+                              onClick={() => handleApproveKembali(t)}
+                              disabled={approvingKembaliId === t.id || rejectingKembaliId === t.id}
+                            >
+                              {approvingKembaliId === t.id ? "..." : "Setujui Kembali"}
+                            </Button>
+                            <Button
+                              variant="danger"
+                              className="px-2 py-1 text-xs"
+                              onClick={() => handleRejectKembali(t)}
+                              disabled={approvingKembaliId === t.id || rejectingKembaliId === t.id}
+                            >
+                              {rejectingKembaliId === t.id ? "..." : "Tolak"}
+                            </Button>
+                          </>
                         )}
                         <Button
                           variant="ghost"
