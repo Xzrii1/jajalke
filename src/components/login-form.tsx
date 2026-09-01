@@ -69,25 +69,23 @@ function inputBox(hasIcon: boolean, focus: string) {
 const fieldLabel =
   "mb-1.5 block text-[13px] font-semibold text-slate-700";
 
+const roleIndex: Record<string, number> = { siswa: 0, petugas: 1, admin: 2 };
+
 export function LoginForm({
   registered,
   next,
   role,
-  displayRole,
   setRole,
   theme = loginThemes["siswa"],
 }: {
   registered?: string;
   next?: string;
   role: "siswa" | "petugas" | "admin";
-  displayRole?: "siswa" | "petugas" | "admin";
   setRole: (r: "siswa" | "petugas" | "admin") => void;
   theme?: LoginTheme;
 }) {
   const [state, formAction, pending] = useActionState(login, null);
   const [showPass, setShowPass] = useState(false);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
 
   const toggleOpts = [
     { value: "siswa" as const, label: "Siswa", Icon: UserIcon },
@@ -95,14 +93,10 @@ export function LoginForm({
     { value: "admin" as const, label: "Admin", Icon: ShieldIcon },
   ];
 
+  const activeIndex = roleIndex[role];
+
   return (
     <div>
-      {/*
-        Re-render the inner section on every role change so the fields
-        remount and the accent/focus colors transition smoothly together
-        with the sliding capsule.
-      */}
-      <div key={displayRole ?? role}>
       {registered && (
         <div className="mb-5">
           <Alert kind="success">
@@ -117,21 +111,28 @@ export function LoginForm({
         </div>
       )}
 
-      {/* Toggle role */}
-      <div role="tablist" aria-label="Pilih peran" className="mb-6 grid grid-cols-3 gap-1.5 rounded-2xl bg-slate-100 p-1.5 shadow-inner">
+      {/* Toggle role — active capsule pill slides smoothly between tabs */}
+      <div
+        role="tablist"
+        aria-label="Pilih peran"
+        className="relative mb-6 grid grid-cols-3 gap-1.5 rounded-2xl bg-slate-100 p-1.5 shadow-inner"
+      >
+        <span
+          aria-hidden
+          style={{ transform: `translateX(${activeIndex * 100}%)` }}
+          className={`pointer-events-none absolute inset-y-1.5 left-1.5 w-[calc((100%-0.75rem)/3)] rounded-xl bg-gradient-to-r ${theme.activePill} shadow-md transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]`}
+        />
         {toggleOpts.map(({ value, label, Icon }) => {
           const active = role === value;
           return (
             <button
-              key={`${value}-${active ? "on" : "off"}`}
+              key={value}
               type="button"
               role="tab"
               aria-selected={active}
               onClick={() => setRole(value)}
-              className={`relative z-10 inline-flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                active
-                  ? `anim-tab-pop bg-gradient-to-r ${theme.activePill} text-white shadow-md`
-                  : "text-slate-500 hover:text-slate-800"
+              className={`relative z-10 inline-flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-sm font-semibold transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                active ? "text-white" : "text-slate-500 hover:text-slate-800"
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -154,8 +155,6 @@ export function LoginForm({
             <input
               id="username"
               name="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
               placeholder={`Contoh: ${role === "admin" ? "admin" : "budi2007"}`}
               autoComplete="username"
               required
@@ -173,8 +172,6 @@ export function LoginForm({
             <input
               id="password"
               name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               type={showPass ? "text" : "password"}
               placeholder="••••••••"
               autoComplete="current-password"
@@ -218,7 +215,6 @@ export function LoginForm({
           )}
         </button>
       </form>
-      </div>
 
       <div className="mt-6 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wider text-slate-300">
         <span className="h-px flex-1 bg-slate-200" />
