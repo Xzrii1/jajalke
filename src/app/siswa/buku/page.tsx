@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { getBukuList, getKategoriList } from "@/app/actions/buku";
 import { pinjamBuku } from "@/app/actions/transaksi";
-import type { ActionResult, Buku } from "@/lib/types";
+import { getRatingInfo } from "@/app/actions/ulasan";
+import { BookRating } from "@/components/book-rating";
+import type { ActionResult, Buku, BukuRating } from "@/lib/types";
 import {
   Alert,
   Badge,
@@ -25,6 +27,7 @@ export default function SiswaBuku() {
   const [message, setMessage] = useState<ActionResult | null>(null);
   const [peminjam, setPeminjam] = useState<string | null>(null);
   const [durations, setDurations] = useState<Record<string, number>>({});
+  const [ratings, setRatings] = useState<Record<string, BukuRating>>({});
   const fetchList = useCallback(
     () => getBukuList({ search, kategori: kategoriFilter || undefined }),
     [search, kategoriFilter]
@@ -42,6 +45,25 @@ export default function SiswaBuku() {
       cancelled = true;
     };
   }, [fetchList]);
+
+  useEffect(() => {
+    if (buku.length === 0) return;
+    let cancelled = false;
+    getRatingInfo(buku.map((b) => b.id)).then((res) => {
+      if (cancelled) return;
+      if (res.data) setRatings(res.data);
+      if (res.error) setError(res.error);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [buku]);
+
+  const refreshRatings = useCallback(async () => {
+    const res = await getRatingInfo(buku.map((b) => b.id));
+    if (res.data) setRatings(res.data);
+    if (res.error) setError(res.error);
+  }, [buku]);
 
   const refresh = useCallback(async () => {
     const res = await fetchList();
@@ -164,6 +186,13 @@ export default function SiswaBuku() {
                     <p className="mt-1 line-clamp-3 text-sm text-slate-600">{b.deskripsi}</p>
                   )}
                 </div>
+              </div>
+              <div className="mt-3">
+                <BookRating
+                  bukuId={b.id}
+                  rating={ratings[b.id]}
+                  onChanged={refreshRatings}
+                />
               </div>
               {b.isbn && <p className="mt-3 text-xs text-slate-400">ISBN {b.isbn}</p>}
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">

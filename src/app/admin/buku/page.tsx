@@ -8,7 +8,9 @@ import {
   getKategoriList,
   updateBuku,
 } from "@/app/actions/buku";
-import type { ActionResult, Buku } from "@/lib/types";
+import { getRatingInfo } from "@/app/actions/ulasan";
+import { BookRating } from "@/components/book-rating";
+import type { ActionResult, Buku, BukuRating } from "@/lib/types";
 import {
   Alert,
   Badge,
@@ -65,6 +67,8 @@ export default function AdminBuku() {
   const [toDelete, setToDelete] = useState<Buku | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  const [ratings, setRatings] = useState<Record<string, BukuRating>>({});
+
   const fetchList = useCallback(
     () => getBukuList({ search, kategori: kategoriFilter || undefined }),
     [search, kategoriFilter]
@@ -92,6 +96,19 @@ export default function AdminBuku() {
   useEffect(() => {
     getKategoriList().then(setKategoriOptions);
   }, []);
+
+  useEffect(() => {
+    if (buku.length === 0) return;
+    let cancelled = false;
+    getRatingInfo(buku.map((b) => b.id)).then((res) => {
+      if (cancelled) return;
+      if (res.data) setRatings(res.data);
+      if (res.error) setError(res.error);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [buku]);
 
   useEffect(() => {
     if (message) {
@@ -205,6 +222,7 @@ await refresh();
                 <th className="pb-2 pr-3 font-semibold">Judul</th>
                 <th className="pb-2 pr-3 font-semibold">Penulis</th>
                 <th className="pb-2 pr-3 font-semibold">Kategori</th>
+                <th className="pb-2 pr-3 font-semibold">Rating</th>
                 <th className="pb-2 pr-3 font-semibold">Tahun</th>
                 <th className="pb-2 pr-3 font-semibold">Stok</th>
                 <th className="pb-2 text-right font-semibold">Aksi</th>
@@ -237,6 +255,9 @@ await refresh();
                     <td className="py-3 pr-3 text-slate-600">{b.penulis ?? "-"}</td>
                     <td className="py-3 pr-3">
                       {b.kategori ? <Badge tone="aktif">{b.kategori}</Badge> : "-"}
+                    </td>
+                    <td className="py-3 pr-3">
+                      <BookRating bukuId={b.id} rating={ratings[b.id]} canRate={false} />
                     </td>
                     <td className="py-3 pr-3 text-slate-600">{b.tahun_terbit ?? "-"}</td>
                     <td className="py-3 pr-3">

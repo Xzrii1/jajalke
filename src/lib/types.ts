@@ -61,3 +61,26 @@ export interface ActionResult {
   error?: string;
   success?: string;
 }
+
+export interface Ulasan {
+  id: string;
+  user_id: string;
+  buku_id: string;
+  rating: number;
+  komentar: string | null;
+  created_at: string;
+  updated_at: string;
+  user?: {
+    username: string;
+    nama_lengkap: string;
+    kelas: string | null;
+  };
+}
+
+/** Ringkasan rating untuk sebuah buku. */
+export interface BukuRating {
+  count: number;
+  avg: number;
+  /** Rating milik user yang sedang login (null jika belum memberi). */
+  myRating: number | null;
+}
