@@ -31,6 +31,51 @@ export interface SiswaProfil {
   totalDendaBelumBayar: number;
 }
 
+export async function getDendaBelumBayar(): Promise<{
+  data?: { denda: ProfilDenda[]; total: number };
+  error?: string;
+}> {
+  const user = await requireSiswa();
+  if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  const sb = getSupabase();
+
+  const { data, error } = await sb
+    .from("transaksi")
+    .select(BASE_SELECT)
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+  if (error) return { error: error.message };
+
+  const dendaPerHari = await getDendaPerHari();
+  const rows = ((data as Transaksi[]) ?? []).map((row) =>
+    normalizeTransaksi(row, dendaPerHari)
+  );
+
+  const denda: ProfilDenda[] = rows
+    .filter((t) => t.tanggal_kembali && dendaSisa(t) > 0)
+    .map((t) => {
+      const diff = diffDaysHelper(t.tanggal_kembali!, t.tanggal_jatuh_tempo);
+      return {
+        transaksi_id: t.id,
+        buku: t.buku?.judul ?? "Buku",
+        tanggal_pinjam: t.tanggal_pinjam,
+        tanggal_jatuh_tempo: t.tanggal_jatuh_tempo,
+        tanggal_kembali: t.tanggal_kembali!,
+        hariTelat: Math.max(0, diff),
+        denda: t.denda,
+        denda_bayar: t.denda_bayar,
+        sisa: dendaSisa(t),
+      };
+    });
+
+  return {
+    data: {
+      denda,
+      total: denda.reduce((s, d) => s + d.sisa, 0),
+    },
+  };
+}
+
 export async function getSiswaProfil(): Promise<{
   data?: SiswaProfil;
   error?: string;
