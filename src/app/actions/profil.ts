@@ -2,6 +2,7 @@
 
 import { requireSiswa } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
+import { getDendaPerHari } from "@/app/actions/pengaturan";
 import { dendaSisa, normalizeTransaksi } from "@/lib/utils";
 import type { ActionResult, Transaksi, User } from "@/lib/types";
 
@@ -45,7 +46,10 @@ export async function getSiswaProfil(): Promise<{
     .order("created_at", { ascending: false });
   if (error) return { error: error.message };
 
-  const rows = ((data as Transaksi[]) ?? []).map(normalizeTransaksi);
+  const dendaPerHari = await getDendaPerHari();
+  const rows = ((data as Transaksi[]) ?? []).map((row) =>
+    normalizeTransaksi(row, dendaPerHari)
+  );
 
   const aktif = rows.filter(
     (t) => t.status === "dipinjam" || t.status === "terlambat"

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getSiswaStats, type SiswaStats } from "@/app/actions/transaksi";
 import { Alert, Card, Spinner } from "@/components/ui";
 import { LiveClock } from "@/components/live-clock";
+import { formatRupiah } from "@/lib/utils";
 
 export default function SiswaDashboard() {
   const [stats, setStats] = useState<SiswaStats | null>(null);
@@ -108,7 +109,9 @@ export default function SiswaDashboard() {
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-slate-600">
             Keterlambatan pengembalian dikenakan denda{" "}
-            <b className="font-semibold text-slate-800">Rp 1.000 per hari</b>{" "}
+            <b className="font-semibold text-slate-800">
+              {formatRupiah(stats?.dendaPerHari ?? 0)} per hari
+            </b>{" "}
             dihitung sejak lewat tanggal jatuh tempo sampai buku dikembalikan.
           </p>
         </Card>

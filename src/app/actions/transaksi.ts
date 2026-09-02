@@ -2,9 +2,9 @@
 
 import { requirePetugasAdmin, requireSiswa } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
+import { getDendaPerHari } from "@/app/actions/pengaturan";
 import {
   addDays,
-  DENDA_PER_HARI,
   dendaSisa,
   diffDays,
   normalizeTransaksi,
@@ -16,8 +16,8 @@ import type { ActionResult, Transaksi, User } from "@/lib/types";
 const BASE_SELECT =
   "*, user:users(username, nama_lengkap, kelas, no_induk), buku:buku(judul, penulis, kategori, isbn)";
 
-function mapRow(row: Transaksi): Transaksi {
-  return normalizeTransaksi(row);
+function mapRow(row: Transaksi, dendaPerHari: number): Transaksi {
+  return normalizeTransaksi(row, dendaPerHari);
 }
 
 export async function getTransaksiSaya(): Promise<{
@@ -62,7 +62,8 @@ export async function getTransaksiList(opts: {
 
   const { data, error } = await query;
   if (error) return { data: [], error: error.message };
-  return { data: (data as Transaksi[]).map(mapRow) };
+  const dendaPerHari = await getDendaPerHari();
+  return { data: (data as Transaksi[]).map((row) => mapRow(row, dendaPerHari)) };
 }
 
 export async function getTransaksiUser(userId: string): Promise<{
@@ -82,7 +83,8 @@ export async function getTransaksiUser(userId: string): Promise<{
     .order("created_at", { ascending: false });
 
   if (error) return { data: [], error: error.message };
-  return { data: (data as Transaksi[]).map(mapRow) };
+  const dendaPerHari = await getDendaPerHari();
+  return { data: (data as Transaksi[]).map((row) => mapRow(row, dendaPerHari)) };
 }
 
 export interface ReportFilter {
@@ -138,7 +140,8 @@ export async function getTransaksiReport(
   const { data, error } = await query;
   if (error) return { error: error.message };
 
-  const rows = ((data as Transaksi[]) ?? []).map(mapRow);
+  const dendaPerHari = await getDendaPerHari();
+  const rows = ((data as Transaksi[]) ?? []).map((row) => mapRow(row, dendaPerHari));
 
   return {
     data: {
@@ -328,7 +331,8 @@ export async function setujuiPengembalian(transaksiId: string): Promise<ActionRe
   const tanggalKembali = todayISO();
   const hariTelat = diffDays(tanggalKembali, trx.tanggal_jatuh_tempo);
   const terlambat = hariTelat > 0;
-  const denda = terlambat ? hariTelat * DENDA_PER_HARI : 0;
+  const dendaPerHari = await getDendaPerHari();
+  const denda = terlambat ? hariTelat * dendaPerHari : 0;
   const status = terlambat ? "terlambat" : "dikembalikan";
 
   const { error: upErr } = await sb
@@ -467,8 +471,9 @@ export async function updateTransaksi(
 
   if (newKembali) {
     const hariTelat = diffDays(newKembali, input.tanggal_jatuh_tempo);
+    const dendaPerHari = await getDendaPerHari();
     patch.status = hariTelat > 0 ? "terlambat" : "dikembalikan";
-    patch.denda = hariTelat > 0 ? hariTelat * DENDA_PER_HARI : 0;
+    patch.denda = hariTelat > 0 ? hariTelat * dendaPerHari : 0;
   } else {
     patch.status = "dipinjam";
     patch.denda = 0;
@@ -581,6 +586,7 @@ export interface SiswaStats {
   pending: number;
   total: number;
   user: User;
+  dendaPerHari: number;
 }
 
 export async function getSiswaStats(): Promise<{ data?: SiswaStats; error?: string }> {
@@ -603,6 +609,7 @@ export async function getSiswaStats(): Promise<{ data?: SiswaStats; error?: stri
       pending: pending.length,
       total: data.length,
       user,
+      dendaPerHari: await getDendaPerHari(),
     },
   };
 }

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getAdminStats, type AdminStats } from "@/app/actions/transaksi";
-import { Alert, Card, Spinner } from "@/components/ui";
+import { getPengaturan, updateDendaPerHari, type Pengaturan } from "@/app/actions/pengaturan";
+import { Alert, Button, Card, Field, Input, Spinner } from "@/components/ui";
 import { AdminChart } from "@/components/admin-chart";
 import { LiveClock } from "@/components/live-clock";
+import type { ActionResult } from "@/lib/types";
 
 function StatCard({
   label,
@@ -77,6 +79,10 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pengaturan, setPengaturan] = useState<Pengaturan | null>(null);
+  const [dendaInput, setDendaInput] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [settingsMsg, setSettingsMsg] = useState<ActionResult | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -90,6 +96,39 @@ export default function AdminDashboard() {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    getPengaturan().then((res) => {
+      if (cancelled) return;
+      if (res.error) setError(res.error);
+      else {
+        setPengaturan(res.data ?? null);
+        setDendaInput(String(res.data?.dendaPerHari ?? ""));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (settingsMsg) {
+      const t = setTimeout(() => setSettingsMsg(null), 6000);
+      return () => clearTimeout(t);
+    }
+  }, [settingsMsg]);
+
+  async function handleSaveDenda() {
+    setSaving(true);
+    setSettingsMsg(null);
+    const res = await updateDendaPerHari(Number(dendaInput));
+    setSettingsMsg(res);
+    setSaving(false);
+    if (res.success && pengaturan) {
+      setPengaturan({ ...pengaturan, dendaPerHari: Math.floor(Number(dendaInput)) });
+    }
+  }
 
   if (loading) return <Spinner label="Memuat dashboard..." />;
 
@@ -119,6 +158,57 @@ export default function AdminDashboard() {
           <div className="anim-rise d-3"><StatCard label="Ajuan Kembali" value={stats.menungguKembali} icon={statIcons.menungguKembali} href="/admin/transaksi" /></div>
         </div>
       )}
+
+      <Card className="card-lift">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-[260px] flex-1">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+              Pengaturan Denda
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              Tarif denda keterlambatan pengembalian buku per hari. Berlaku untuk
+              peminjaman yang disetujui setelah disimpan.
+            </p>
+            {pengaturan?.dendaPerHari !== undefined && (
+              <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-sm font-semibold text-rose-700">
+                Rp {pengaturan.dendaPerHari.toLocaleString("id-ID")} / hari
+              </p>
+            )}
+          </div>
+          {pengaturan?.canEdit ? (
+            <div className="w-full sm:w-72">
+              <Field label="Tarif denda (Rp/hari)">
+                <div className="flex gap-2">
+                  <Input
+                    value={dendaInput}
+                    onChange={(e) => setDendaInput(e.target.value)}
+                    type="number"
+                    min={0}
+                    placeholder="1000"
+                    disabled={saving}
+                  />
+                  <Button onClick={handleSaveDenda} disabled={saving || !dendaInput.trim()}>
+                    {saving ? "Menyimpan..." : "Simpan"}
+                  </Button>
+                </div>
+              </Field>
+            </div>
+          ) : (
+            <p className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Hanya akun <b>Admin</b> yang dapat mengubah tarif denda.
+            </p>
+          )}
+        </div>
+        {settingsMsg?.error && (
+          <div className="mt-3"><Alert kind="error">{settingsMsg.error}</Alert></div>
+        )}
+        {settingsMsg?.success && (
+          <div className="mt-3"><Alert kind="success">{settingsMsg.success}</Alert></div>
+        )}
+      </Card>
 
       <Card className="anim-chart card-lift p-5 sm:p-6">
         <AdminChart />

@@ -1,6 +1,7 @@
 import type { Transaksi, TransaksiStatus } from "./types";
 
-export const DENDA_PER_HARI = 1000;
+/** Tarif denda default bila belum diatur dari dashboard admin. */
+export const DENDA_PER_HARI_DEFAULT = 1000;
 
 export function toISODate(d: Date): string {
   const y = d.getFullYear();
@@ -56,14 +57,15 @@ export function resolveStatus(
 
 /** Denda efektif: dari DB bila sudah dikembalikan, atau hitung ulang bila masih berjalan & terlambat. */
 export function resolveDenda(
-  t: Pick<Transaksi, "status" | "tanggal_kembali" | "tanggal_jatuh_tempo" | "denda">
+  t: Pick<Transaksi, "status" | "tanggal_kembali" | "tanggal_jatuh_tempo" | "denda">,
+  dendaPerHari: number = DENDA_PER_HARI_DEFAULT
 ): number {
   if (t.tanggal_kembali) return t.denda ?? 0;
   if (t.status === "pending" || t.status === "ditolak") return 0;
   // menunggu_kembali masih dihitung dendanya karena buku belum benar-benar kembali
   const status = resolveStatus(t);
   if (status === "terlambat" || status === "menunggu_kembali") {
-    return diffDays(todayISO(), t.tanggal_jatuh_tempo) * DENDA_PER_HARI;
+    return diffDays(todayISO(), t.tanggal_jatuh_tempo) * dendaPerHari;
   }
   return 0;
 }
@@ -78,11 +80,14 @@ export function dendaSisa(
 }
 
 /** Standarisasi kolom status/denda hasil query agar tampilan konsisten. */
-export function normalizeTransaksi(row: Transaksi): Transaksi {
+export function normalizeTransaksi(
+  row: Transaksi,
+  dendaPerHari: number = DENDA_PER_HARI_DEFAULT
+): Transaksi {
   return {
     ...row,
     status: resolveStatus(row),
-    denda: resolveDenda(row),
+    denda: resolveDenda(row, dendaPerHari),
     denda_bayar: row.denda_bayar ?? 0,
   };
 }
