@@ -8,6 +8,8 @@ export type TransaksiStatus =
   | "ditolak"
   | "menunggu_kembali";
 
+export type KondisiBuku = "baru" | "baik" | "bekas" | "rusak";
+
 export interface User {
   id: string;
   username: string;
@@ -27,6 +29,7 @@ export interface Buku {
   isbn: string | null;
   kategori: string | null;
   stok: number;
+  kondisi?: KondisiBuku | null;
   deskripsi: string | null;
   cover_url: string | null;
   created_at: string;

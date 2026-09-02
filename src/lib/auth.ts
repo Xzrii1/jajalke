@@ -38,6 +38,12 @@ export async function requireAdmin(): Promise<User> {
   return user;
 }
 
+export async function requirePetugas(): Promise<User> {
+  const user = await requireUser();
+  if (user.role !== "petugas") redirect("/admin/dashboard");
+  return user;
+}
+
 export async function requireSiswa(): Promise<User> {
   const user = await requireUser();
   if (user.role !== "siswa") redirect("/admin/dashboard");

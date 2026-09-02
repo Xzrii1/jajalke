@@ -543,10 +543,11 @@ export interface AdminStats {
   transaksiAktif: number;
   transaksiPending: number;
   menungguKembali: number;
+  role: "admin" | "petugas";
 }
 
 export async function getAdminStats(): Promise<{ data?: AdminStats; error?: string }> {
-  await requirePetugasAdmin();
+  const user = await requirePetugasAdmin();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
   const sb = getSupabase();
 
@@ -576,6 +577,7 @@ export async function getAdminStats(): Promise<{ data?: AdminStats; error?: stri
       transaksiAktif: aktif.count ?? 0,
       transaksiPending: pending.count ?? 0,
       menungguKembali: menungguKembali.count ?? 0,
+      role: user.role === "admin" ? "admin" : "petugas",
     },
   };
 }

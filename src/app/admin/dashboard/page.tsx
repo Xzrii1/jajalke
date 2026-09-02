@@ -215,21 +215,23 @@ export default function AdminDashboard() {
       </Card>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="card-lift">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-indigo-500">
-            Kelola Data Buku
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            Tambah, ubah, hapus, dan cari data buku perpustakaan.
-          </p>
-          <Link
-            href="/admin/buku"
-            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 transition group-hover:gap-2 hover:underline"
-          >
-            Buka menu
-            <span aria-hidden>→</span>
-          </Link>
-        </Card>
+        {stats?.role === "petugas" && (
+          <Card className="card-lift">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-indigo-500">
+              Kelola Data Buku
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              Tambah, ubah, hapus, dan cari data buku perpustakaan.
+            </p>
+            <Link
+              href="/admin/buku"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 transition group-hover:gap-2 hover:underline"
+            >
+              Buka menu
+              <span aria-hidden>→</span>
+            </Link>
+          </Card>
+        )}
         <Card className="card-lift">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-amber-500">
             Kelola Anggota

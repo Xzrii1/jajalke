@@ -1,8 +1,9 @@
 "use server";
 
-import { requirePetugasAdmin, requireUser } from "@/lib/auth";
+import { requirePetugas, requireUser } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
-import type { ActionResult, Buku } from "@/lib/types";
+import { KONDISI_OPTIONS } from "@/lib/kondisi";
+import type { ActionResult, Buku, KondisiBuku } from "@/lib/types";
 
 export interface BukuInput {
   judul: string;
@@ -12,6 +13,7 @@ export interface BukuInput {
   isbn?: string;
   kategori?: string;
   stok?: string;
+  kondisi?: string;
   deskripsi?: string;
   cover_url?: string;
 }
@@ -19,6 +21,12 @@ export interface BukuInput {
 function emptyToNull(v?: string): string | null {
   const t = (v ?? "").trim();
   return t === "" ? null : t;
+}
+
+function normalizeKondisi(v?: string): KondisiBuku {
+  return (KONDISI_OPTIONS as string[]).includes(v ?? "")
+    ? (v as KondisiBuku)
+    : "baik";
 }
 
 export async function getBukuList(opts: {
@@ -60,7 +68,7 @@ export async function getKategoriList(): Promise<string[]> {
 }
 
 export async function createBuku(input: BukuInput): Promise<ActionResult> {
-  await requirePetugasAdmin();
+  await requirePetugas();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
 
   const judul = input.judul.trim();
@@ -79,6 +87,7 @@ export async function createBuku(input: BukuInput): Promise<ActionResult> {
     isbn: emptyToNull(input.isbn),
     kategori: emptyToNull(input.kategori),
     stok,
+    kondisi: normalizeKondisi(input.kondisi),
     deskripsi: emptyToNull(input.deskripsi),
     cover_url: emptyToNull(input.cover_url),
   });
@@ -88,7 +97,7 @@ export async function createBuku(input: BukuInput): Promise<ActionResult> {
 }
 
 export async function updateBuku(id: string, input: BukuInput): Promise<ActionResult> {
-  await requirePetugasAdmin();
+  await requirePetugas();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
 
   const judul = input.judul.trim();
@@ -109,6 +118,7 @@ export async function updateBuku(id: string, input: BukuInput): Promise<ActionRe
       isbn: emptyToNull(input.isbn),
       kategori: emptyToNull(input.kategori),
       stok,
+      kondisi: normalizeKondisi(input.kondisi),
       deskripsi: emptyToNull(input.deskripsi),
       cover_url: emptyToNull(input.cover_url),
       updated_at: new Date().toISOString(),
@@ -120,7 +130,7 @@ export async function updateBuku(id: string, input: BukuInput): Promise<ActionRe
 }
 
 export async function deleteBuku(id: string): Promise<ActionResult> {
-  await requirePetugasAdmin();
+  await requirePetugas();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
 
   const { error } = await getSupabase().from("buku").delete().eq("id", id);

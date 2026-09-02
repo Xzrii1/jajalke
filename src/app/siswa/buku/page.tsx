@@ -5,6 +5,7 @@ import { getBukuList, getKategoriList } from "@/app/actions/buku";
 import { pinjamBuku } from "@/app/actions/transaksi";
 import { getRatingInfo } from "@/app/actions/ulasan";
 import { BookRating } from "@/components/book-rating";
+import { KONDISI_LABELS, KONDISI_TONES } from "@/lib/kondisi";
 import type { ActionResult, Buku, BukuRating } from "@/lib/types";
 import {
   Alert,
@@ -177,6 +178,12 @@ export default function SiswaBuku() {
                     <h3 className="font-semibold text-slate-900">{b.judul}</h3>
                   </div>
                   {b.kategori ? <Badge tone="aktif" className="mt-1 w-fit">{b.kategori}</Badge> : null}
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <Badge tone={KONDISI_TONES[b.kondisi ?? "baik"]} className="w-fit">
+                      {KONDISI_LABELS[b.kondisi ?? "baik"]}
+                    </Badge>
+                    <span className="text-xs text-slate-400">kondisi buku</span>
+                  </div>
                   <p className="mt-2 text-sm text-slate-500">
                     {b.penulis ?? "Tanpa penulis"}
                     {b.penerbit ? ` · ${b.penerbit}` : ""}
