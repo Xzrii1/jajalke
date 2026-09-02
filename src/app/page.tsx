@@ -72,6 +72,59 @@ const marqueeItems = [
   "Grafik & Statistik",
 ];
 
+const prosedur = [
+  {
+    step: "01",
+    title: "Cari & Pilih Buku",
+    desc: "Telusuri koleksi lewat menu Cari Buku dan pilih buku yang ingin kamu pinjam.",
+  },
+  {
+    step: "02",
+    title: "Ajukan Peminjaman",
+    desc: "Atur lama pinjam (maks. 30 hari) lalu klik Ajukan. Permintaan masuk ke petugas.",
+  },
+  {
+    step: "03",
+    title: "Tunggu Persetujuan",
+    desc: "Petugas memverifikasi ketersediaan stok dan menyetujui permohonanmu.",
+  },
+  {
+    step: "04",
+    title: "Cetak Struk Pinjam",
+    desc: "Setelah disetujui, kamu bisa mencetak struk peminjaman sebagai bukti.",
+  },
+  {
+    step: "05",
+    title: "Kembalikan Tepat Waktu",
+    desc: "Ajukan kembali lewat Peminjaman Saya; pengembalian juga diverifikasi petugas.",
+  },
+];
+
+function ProsedurStep({
+  step,
+  title,
+  desc,
+  delay,
+}: {
+  step: string;
+  title: string;
+  desc: string;
+  delay: string;
+}) {
+  return (
+    <div
+      style={{ animationDelay: delay }}
+      className="anim-rise card-lift group rounded-2xl border border-white/12 bg-white/8 p-5 text-left backdrop-blur-md"
+    >
+      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500/90 to-violet-600/90 font-display text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 transition-transform duration-300 group-hover:scale-110">
+        {step}
+      </span>
+      <h3 className="mt-3 font-display text-base font-medium text-white">{title}</h3>
+      <p className="mt-1 text-sm leading-relaxed text-indigo-100/80">{desc}</p>
+    </div>
+  );
+}
+
 export default async function Home() {
   const session = await getSession();
   if (session) {
@@ -161,6 +214,43 @@ export default async function Home() {
           <FeatureCard key={f.title} icon={f.icon} title={f.title} desc={f.desc} delay={`${340 + i * 90}ms`} />
         ))}
       </div>
+
+      {/* Prosedur pinjam */}
+      <section
+        style={{ animationDelay: "620ms" }}
+        className="relative mx-auto mt-16 w-full max-w-4xl"
+      >
+        <div className="anim-rise text-center">
+          <h2 className="font-display text-2xl font-medium text-white sm:text-3xl">
+            Prosedur Peminjaman
+          </h2>
+          <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-indigo-100/80">
+            Alur lengkap meminjam buku di perpustakaan sekolah digital dalam
+            beberapa langkah mudah.
+          </p>
+        </div>
+        <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {prosedur.map((p, i) => (
+            <ProsedurStep
+              key={p.title}
+              step={p.step}
+              title={p.title}
+              desc={p.desc}
+              delay={`${680 + i * 90}ms`}
+            />
+          ))}
+          <div
+            style={{ animationDelay: "1120ms" }}
+            className="anim-rise flex flex-col justify-center rounded-2xl border border-amber-300/30 bg-amber-400/10 p-5 text-left backdrop-blur-md"
+          >
+            <p className="text-sm leading-relaxed text-amber-100">
+              ⚠️ Keterlambatan pengembalian dikenakan{" "}
+              <b className="font-semibold text-white">denda otomatis</b> per
+              hari sampai buku dikembalikan.
+            </p>
+          </div>
+        </div>
+      </section>
 
       {/* Ribbon berjalan */}
       <div
