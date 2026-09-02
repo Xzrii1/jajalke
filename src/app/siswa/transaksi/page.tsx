@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { getTransaksiSaya, kembalikanBuku } from "@/app/actions/transaksi";
 import { formatRupiah, formatTanggal, dendaSisa } from "@/lib/utils";
+import { cetakStruk } from "@/lib/struk";
 import type { ActionResult, Transaksi, TransaksiStatus } from "@/lib/types";
 import {
   Alert,
@@ -148,13 +149,18 @@ export default function SiswaTransaksi() {
                         <span className="text-xs text-orange-600">Menunggu</span>
                       ) : t.tanggal_kembali === null &&
                         (t.status === "dipinjam" || t.status === "terlambat") ? (
-                        <Button
-                          variant="success"
-                          onClick={() => handleKembali(t)}
-                          disabled={kembalikanId === t.id}
-                        >
-                          {kembalikanId === t.id ? "Mengajukan..." : "Ajukan Kembali"}
-                        </Button>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" onClick={() => cetakStruk(t)}>
+                            Struk
+                          </Button>
+                          <Button
+                            variant="success"
+                            onClick={() => handleKembali(t)}
+                            disabled={kembalikanId === t.id}
+                          >
+                            {kembalikanId === t.id ? "Mengajukan..." : "Ajukan Kembali"}
+                          </Button>
+                        </div>
                       ) : t.status === "pending" ? (
                         <span className="text-xs text-amber-600">Menunggu</span>
                       ) : t.status === "ditolak" ? (

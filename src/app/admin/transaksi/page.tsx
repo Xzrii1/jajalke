@@ -14,6 +14,7 @@ import {
   updateTransaksi,
 } from "@/app/actions/transaksi";
 import { formatRupiah, formatTanggal, todayISO, dendaSisa } from "@/lib/utils";
+import { cetakStruk } from "@/lib/struk";
 import type { ActionResult, Transaksi, TransaksiStatus, User } from "@/lib/types";
 import {
   Alert,
@@ -351,6 +352,15 @@ export default function AdminTransaksi() {
                               {rejectingKembaliId === t.id ? "..." : "Tolak"}
                             </Button>
                           </>
+                        )}
+                        {(t.status === "dipinjam" || t.status === "terlambat") && (
+                          <Button
+                            variant="ghost"
+                            className="px-2 py-1 text-xs"
+                            onClick={() => cetakStruk(t)}
+                          >
+                            Struk
+                          </Button>
                         )}
                         <Button
                           variant="ghost"
