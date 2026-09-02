@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getTransaksiSaya, kembalikanBuku } from "@/app/actions/transaksi";
-import { formatRupiah, formatTanggal } from "@/lib/utils";
+import { formatRupiah, formatTanggal, dendaSisa } from "@/lib/utils";
 import type { ActionResult, Transaksi, TransaksiStatus } from "@/lib/types";
 import {
   Alert,
@@ -81,7 +81,7 @@ export default function SiswaTransaksi() {
       t.status !== "ditolak" &&
       t.status !== "menunggu_kembali"
   );
-  const jumlahDenda = transaksi.reduce((sum, t) => sum + t.denda, 0);
+  const jumlahDenda = transaksi.reduce((sum, t) => sum + dendaSisa(t), 0);
 
   return (
     <div className="anim-rise space-y-5">
@@ -137,7 +137,7 @@ export default function SiswaTransaksi() {
                     <td className="py-3 pr-3 text-slate-600">
                       {t.denda > 0 ? (
                         <span className="font-medium text-rose-600">
-                          {formatRupiah(t.denda)}
+                          {formatRupiah(dendaSisa(t))}
                         </span>
                       ) : (
                         "-"

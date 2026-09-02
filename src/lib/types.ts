@@ -42,6 +42,7 @@ export interface Transaksi {
   tanggal_kembali: string | null;
   status: TransaksiStatus;
   denda: number;
+  denda_bayar: number;
   created_at: string;
   user?: {
     username: string;

@@ -8,7 +8,7 @@ import {
   getTransaksiReport,
   type ReportData,
 } from "@/app/actions/transaksi";
-import { formatRupiah, formatTanggal, todayISO } from "@/lib/utils";
+import { formatRupiah, formatTanggal, todayISO, dendaSisa } from "@/lib/utils";
 import { Alert, Button, Field, Input, Select, Spinner } from "@/components/ui";
 
 const STATUS_OPTIONS = [
@@ -44,7 +44,7 @@ function buildTableRows(data: ReportData) {
     t.user?.kelas ?? "-",
     t.buku?.judul ?? "-",
     STATUS_LABELS[t.status] ?? t.status,
-    t.denda > 0 ? formatRupiah(t.denda) : "-",
+    dendaSisa(t) > 0 ? formatRupiah(dendaSisa(t)) : "-",
   ]);
 }
 
@@ -167,7 +167,7 @@ export function ReportPanel() {
           <td>${t.user?.kelas ?? "-"}</td>
           <td>${t.buku?.judul ?? "-"}</td>
           <td>${STATUS_LABELS[t.status] ?? t.status}</td>
-          <td>${t.denda > 0 ? formatRupiah(t.denda) : "-"}</td>
+          <td>${dendaSisa(t) > 0 ? formatRupiah(dendaSisa(t)) : "-"}</td>
         </tr>`
       )
       .join("");

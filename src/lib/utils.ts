@@ -68,12 +68,22 @@ export function resolveDenda(
   return 0;
 }
 
+/** Sisa denda yang masih harus dibayar (denda - sudah dibayar), min 0. */
+export function dendaSisa(
+  t: Pick<Transaksi, "denda" | "denda_bayar">
+): number {
+  const denda = t.denda ?? 0;
+  const bayar = t.denda_bayar ?? 0;
+  return Math.max(0, denda - bayar);
+}
+
 /** Standarisasi kolom status/denda hasil query agar tampilan konsisten. */
 export function normalizeTransaksi(row: Transaksi): Transaksi {
   return {
     ...row,
     status: resolveStatus(row),
     denda: resolveDenda(row),
+    denda_bayar: row.denda_bayar ?? 0,
   };
 }
 

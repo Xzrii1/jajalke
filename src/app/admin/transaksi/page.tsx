@@ -13,7 +13,7 @@ import {
   tolakPengembalian,
   updateTransaksi,
 } from "@/app/actions/transaksi";
-import { formatRupiah, formatTanggal, todayISO } from "@/lib/utils";
+import { formatRupiah, formatTanggal, todayISO, dendaSisa } from "@/lib/utils";
 import type { ActionResult, Transaksi, TransaksiStatus, User } from "@/lib/types";
 import {
   Alert,
@@ -308,7 +308,7 @@ export default function AdminTransaksi() {
                       <Badge tone={statusTone[t.status]}>{statusLabel[t.status]}</Badge>
                     </td>
                     <td className="py-3 pr-3 text-slate-600">
-                      {t.denda > 0 ? formatRupiah(t.denda) : "-"}
+                      {dendaSisa(t) > 0 ? formatRupiah(dendaSisa(t)) : "-"}
                     </td>
                     <td className="py-3 text-right">
                       <div className="inline-flex flex-wrap justify-end gap-1">

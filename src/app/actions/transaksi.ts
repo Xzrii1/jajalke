@@ -5,6 +5,7 @@ import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/s
 import {
   addDays,
   DENDA_PER_HARI,
+  dendaSisa,
   diffDays,
   normalizeTransaksi,
   todayISO,
@@ -145,7 +146,7 @@ export async function getTransaksiReport(
       dari: dari || undefined,
       sampai: sampai || undefined,
       total: rows.length,
-      totalDenda: rows.reduce((s, r) => s + (r.denda || 0), 0),
+      totalDenda: rows.reduce((s, r) => s + dendaSisa(r), 0),
       totalDipinjam: rows.filter((r) => r.status === "dipinjam" || r.status === "terlambat").length,
       totalKembali: rows.filter((r) => r.status === "dikembalikan").length,
     },
