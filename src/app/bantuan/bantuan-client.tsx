@@ -45,7 +45,7 @@ const faq = [
     tone: "bg-emerald-50 text-emerald-700 ring-emerald-100",
   },
   {
-    q: "Bagaimana saya tahu akibat lupa periode pinjam?",
+    q: "Bagaimana saya tahu batas waktu meminjam?",
     a: "Ada pengingat denda di dashboard, dan kamu bisa memantau batas waktu di menu Peminjaman Saya serta Profil Saya kapan saja.",
     tone: "bg-sky-50 text-sky-700 ring-sky-100",
   },
@@ -63,10 +63,7 @@ export default function BantuanClient({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [riwayatLoading, setRiwayatLoading] = useState(Boolean(isLoggedIn));
 
   const load = useCallback(async () => {
-    if (!isLoggedIn) {
-      setRiwayatLoading(false);
-      return;
-    }
+    if (!isLoggedIn) return;
     const res = await getPermintaanSaya();
     if (res.error) setRiwayatError(res.error);
     else setRiwayat(res.data ?? []);
@@ -149,53 +146,53 @@ export default function BantuanClient({ isLoggedIn }: { isLoggedIn: boolean }) {
                 </a>
               </div>
             ) : (
-            <div className="mt-4 space-y-4">
-              {message?.error && <Alert kind="error">{message.error}</Alert>}
-              {message?.success && <Alert kind="success">{message.success}</Alert>}
+              <div className="mt-4 space-y-4">
+                {message?.error && <Alert kind="error">{message.error}</Alert>}
+                {message?.success && <Alert kind="success">{message.success}</Alert>}
 
-              <Field label="Jenis permintaan" htmlFor="jenis">
-                <Select
-                  id="jenis"
-                  value={jenis}
-                  onChange={(e) => setJenis(e.target.value as JenisBantuan)}
-                >
-                  {JENIS_BANTUAN_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </Select>
-              </Field>
+                <Field label="Jenis permintaan" htmlFor="jenis">
+                  <Select
+                    id="jenis"
+                    value={jenis}
+                    onChange={(e) => setJenis(e.target.value as JenisBantuan)}
+                  >
+                    {JENIS_BANTUAN_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
 
-              <Field label="Subjek" htmlFor="subjek">
-                <Input
-                  id="subjek"
-                  value={subjek}
-                  onChange={(e) => setSubjek(e.target.value)}
-                  placeholder={jenis === "reset_password" ? "Contoh: Lupa password akun siswa" : "Ringkasan singkat masalah"}
-                  maxLength={120}
-                />
-              </Field>
+                <Field label="Subjek" htmlFor="subjek">
+                  <Input
+                    id="subjek"
+                    value={subjek}
+                    onChange={(e) => setSubjek(e.target.value)}
+                    placeholder={jenis === "reset_password" ? "Contoh: Lupa password akun siswa" : "Ringkasan singkat masalah"}
+                    maxLength={120}
+                  />
+                </Field>
 
-              <Field label="Pesan" htmlFor="pesan">
-                <Textarea
-                  id="pesan"
-                  rows={4}
-                  value={pesan}
-                  onChange={(e) => setPesan(e.target.value)}
-                  placeholder={
-                    jenis === "reset_password"
-                      ? "Jelaskan username/akun yang lupa password beserta kelas/NIS jika ada."
-                      : "Jelaskan masalah atau pertanyaanmu secara detail."
-                  }
-                  maxLength={1000}
-                />
-              </Field>
+                <Field label="Pesan" htmlFor="pesan">
+                  <Textarea
+                    id="pesan"
+                    rows={4}
+                    value={pesan}
+                    onChange={(e) => setPesan(e.target.value)}
+                    placeholder={
+                      jenis === "reset_password"
+                        ? "Jelaskan username/akun yang lupa password beserta kelas/NIS jika ada."
+                        : "Jelaskan masalah atau pertanyaanmu secara detail."
+                    }
+                    maxLength={1000}
+                  />
+                </Field>
 
-              <Button onClick={handleSubmit} disabled={submitting} className="w-full">
-                {submitting ? "Mengirim..." : "Kirim Permintaan"}
-              </Button>
-            </div>
+                <Button onClick={handleSubmit} disabled={submitting} className="w-full">
+                  {submitting ? "Mengirim..." : "Kirim Permintaan"}
+                </Button>
+              </div>
             )}
           </Card>
 

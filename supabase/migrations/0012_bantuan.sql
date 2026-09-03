@@ -1,13 +1,14 @@
 -- ============================================================================
 -- Aplikasi Perpustakaan Sekolah Digital
--- Migration 0011: permintaan bantuan (customer service)
+-- Migration 0012: permintaan bantuan (customer service) - v2
 --
--- Tabel permintaan_bantuan menyimpan pesan dari pengguna (siswa/petugas/admin)
--- terkait permintaan reset password, pertanyaan penggunaan, atau keluhan lain.
--- Admin/petugas bisa membalas dan mengubah status permintaan.
+-- Membuat ulang fitur bantuan dari nol. Menghapus tabel versi 0011 lalu
+-- membuat tabel permintaan_bantuan yang baru.
 --
 -- WAJIB dijalankan di Supabase Dashboard -> SQL Editor.
 -- ============================================================================
+drop table if exists public.permintaan_bantuan cascade;
+
 create table if not exists public.permintaan_bantuan (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references public.users (id) on delete cascade,
