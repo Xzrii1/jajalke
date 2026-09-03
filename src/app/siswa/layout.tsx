@@ -19,6 +19,7 @@ export default async function SiswaLayout({
           { href: "/siswa/buku", label: "Cari Buku" },
           { href: "/siswa/transaksi", label: "Peminjaman Saya" },
           { href: "/siswa/profil", label: "Profil" },
+          { href: "/bantuan", label: "Bantuan" },
         ]}
       />
       <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
