@@ -12,6 +12,9 @@ Aplikasi web **perpustakaan sekolah digital** untuk pengelolaan **peminjaman buk
 | Auth/Sesi     | Custom JWT (library `jose`) dalam cookie httpOnly            |
 | Password hash | `bcryptjs`                                                  |
 | Hosting       | Vercel (deploy-ready)                                       |
+| Repository    | `bcryptjs`                                                  |
+| Readme.MD     | Vercel (deploy-ready)                                       |
+
 
 ## Keputusan Arsitektur: Auth custom, bukan Supabase Auth
 
