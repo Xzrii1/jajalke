@@ -17,8 +17,12 @@ export function TiltCard({
   const frame = useRef(0);
 
   const reduced =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    (typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) ||
+    // Layar sentuh (perangkat mobile/tablet): tilt 3D + backdrop-filter saat drag
+    // bisa bikin lag, jadi matikan tilt di perangkat tersebut.
+    (typeof window !== "undefined" &&
+      window.matchMedia?.("(pointer: coarse)").matches);
 
   function onMove(e: React.PointerEvent<HTMLDivElement>) {
     if (reduced || !ref.current) return;

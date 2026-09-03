@@ -49,12 +49,10 @@ body {
   from {
     opacity: 0;
     transform: translateY(10px);
-    filter: blur(3px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
-    filter: blur(0);
   }
 }
 
@@ -83,16 +81,39 @@ body {
   0%, 100% { transform: translate3d(0, 0, 0); }
   50% { transform: translate3d(0, -22px, 0); }
 }
-.anim-float { animation: floaty 7s ease-in-out infinite; }
-.anim-float-slow { animation: floaty 11s ease-in-out infinite; }
+.anim-float { animation: floaty 7s ease-in-out infinite; will-change: transform; }
+.anim-float-slow { animation: floaty 11s ease-in-out infinite; will-change: transform; }
 
 @keyframes drift {
-  0% { transform: translate(0, 0) scale(1); opacity: 0.35; }
-  50% { transform: translate(26px, -30px) scale(1.15); opacity: 0.7; }
-  100% { transform: translate(0, 0) scale(1); opacity: 0.35; }
+  0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.35; }
+  50% { transform: translate3d(26px, -30px, 0) scale(1.15); opacity: 0.7; }
+  100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.35; }
 }
-.anim-drift { animation: drift 14s ease-in-out infinite; }
-.anim-drift-rev { animation: drift 18s ease-in-out infinite reverse; }
+.anim-drift { animation: drift 14s ease-in-out infinite; will-change: transform, opacity; }
+.anim-drift-rev { animation: drift 18s ease-in-out infinite reverse; will-change: transform, opacity; }
+
+/* Orb lembut menggunakan radial-gradient (TANPA filter blur) agar hemat GPU.
+   Diganti blur-3xl pada elemen yang dianimasi untuk mencegah re-blur tiap frame. */
+.orb,
+.orb-indigo,
+.orb-violet,
+.orb-fuchsia {
+  border-radius: 9999px;
+  will-change: transform;
+}
+.orb-indigo {
+  background: radial-gradient(circle at 35% 35%, rgba(129, 140, 248, 0.55), rgba(79, 70, 229, 0.18) 60%, transparent 70%);
+}
+.orb-violet {
+  background: radial-gradient(circle at 35% 35%, rgba(167, 139, 250, 0.5), rgba(124, 58, 237, 0.16) 60%, transparent 70%);
+}
+.orb-fuchsia {
+  background: radial-gradient(circle at 35% 35%, rgba(232, 121, 249, 0.42), rgba(217, 70, 239, 0.12) 60%, transparent 70%);
+}
+/* Opsi statis (tidak dianimasi) tetap boleh pakai blur untuk kedalaman halus */
+.orb-static {
+  filter: blur(24px);
+}
 
 @keyframes gradientMove {
   0% { background-position: 0% 50%; }
@@ -154,11 +175,26 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
 
+@media (max-width: 640px) {
+  /* Layar kecil: kurangi radius blur padahal background sudah samar */
+  .glass-panel {
+    -webkit-backdrop-filter: blur(10px) saturate(1.2);
+    backdrop-filter: blur(10px) saturate(1.2);
+  }
+}
+
 .glass-chip {
   background: rgba(255, 255, 255, 0.9);
   -webkit-backdrop-filter: blur(12px) saturate(1.3);
   backdrop-filter: blur(12px) saturate(1.3);
   border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 640px) {
+  .glass-chip {
+    -webkit-backdrop-filter: blur(8px) saturate(1.2);
+    backdrop-filter: blur(8px) saturate(1.2);
+  }
 }
 
 /* Micro-interaction: kartu diangkat halus saat hover */

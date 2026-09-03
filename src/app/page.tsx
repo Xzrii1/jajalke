@@ -135,11 +135,11 @@ export default async function Home() {
     <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-4 py-16">
       <SchoolBackdrop />
 
-      {/* Orb / partikel mengambang */}
+      {/* Orb / partikel mengambang (radial-gradient, hemat GPU) */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-[5] overflow-hidden">
-        <div className="anim-drift absolute -left-24 top-16 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
-        <div className="anim-drift-rev absolute right-0 top-1/3 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
-        <div className="anim-drift absolute bottom-10 left-1/3 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl" />
+        <div className="anim-drift orb orb-indigo absolute -left-24 top-16 h-72 w-72" />
+        <div className="anim-drift-rev orb orb-violet absolute right-0 top-1/3 h-80 w-80" />
+        <div className="anim-drift orb orb-fuchsia absolute bottom-10 left-1/3 h-72 w-72" />
         <span className="anim-float absolute left-[14%] top-[22%] text-3xl opacity-25">📚</span>
         <span className="anim-float-slow absolute right-[16%] top-[30%] text-3xl opacity-25">✨</span>
         <span className="anim-float absolute bottom-[26%] right-[24%] text-3xl opacity-20">📖</span>
