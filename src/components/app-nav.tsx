@@ -14,11 +14,13 @@ export function AppNav({
   links,
   userLabel,
   roleLabel,
+  guest = false,
 }: {
   brand: string;
   links: NavLink[];
   userLabel: string;
   roleLabel?: string;
+  guest?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -69,7 +71,7 @@ export function AppNav({
               )}
             </div>
           </div>
-          {roleLabel && (
+          {!guest && (
             <form action={logout}>
               <button
                 type="submit"

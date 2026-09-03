@@ -14,6 +14,7 @@ export default async function BantuanLayout({
         brand="Perpus Sekolah"
         userLabel={user?.nama_lengkap ?? "Pengunjung"}
         roleLabel={user ? "Pusat Bantuan" : undefined}
+        guest={!user}
         links={
           user
             ? [
