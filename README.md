@@ -13,7 +13,7 @@ Aplikasi web **perpustakaan sekolah digital** untuk pengelolaan **peminjaman buk
 | Password hash | `bcryptjs`                                                  |
 | Hosting       | Vercel (deploy-ready)                                       |
 | Repository    | https://github.com/Xzrii1/jajalke                           |
-| WireFrame     | [casediagram](casediagram.jfif) [                                                             |
+| WireFrame     | [casediagram](casediagram.jfif) [Activitydiagram](Gemini_Generated_Image_v5eelsv5eelsv5ee.jpg)                                                              |
 
 
 ## Keputusan Arsitektur: Auth custom, bukan Supabase Auth
