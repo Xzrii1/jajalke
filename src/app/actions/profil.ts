@@ -7,11 +7,12 @@ import { dendaSisa, normalizeTransaksi } from "@/lib/utils";
 import type { ActionResult, Transaksi, User } from "@/lib/types";
 
 const BASE_SELECT =
-  "*, user:users(username, nama_lengkap, kelas, no_induk), buku:buku(judul, penulis, kategori, isbn)";
+  "*, user:users(username, nama_lengkap, kelas, no_induk), buku:buku(judul, penulis, kategori, isbn, cover_url)";
 
 export interface ProfilDenda {
   transaksi_id: string;
   buku: string;
+  cover_url: string | null;
   tanggal_pinjam: string;
   tanggal_jatuh_tempo: string;
   tanggal_kembali: string;
@@ -58,6 +59,7 @@ export async function getDendaBelumBayar(): Promise<{
       return {
         transaksi_id: t.id,
         buku: t.buku?.judul ?? "Buku",
+        cover_url: t.buku?.cover_url ?? null,
         tanggal_pinjam: t.tanggal_pinjam,
         tanggal_jatuh_tempo: t.tanggal_jatuh_tempo,
         tanggal_kembali: t.tanggal_kembali!,
@@ -109,6 +111,7 @@ export async function getSiswaProfil(): Promise<{
       return {
         transaksi_id: t.id,
         buku: t.buku?.judul ?? "Buku",
+        cover_url: t.buku?.cover_url ?? null,
         tanggal_pinjam: t.tanggal_pinjam,
         tanggal_jatuh_tempo: t.tanggal_jatuh_tempo,
         tanggal_kembali: t.tanggal_kembali!,

@@ -152,12 +152,30 @@ export default function SiswaProfil() {
                 key={d.transaksi_id}
                 className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-3"
               >
-                <div className="min-w-[200px]">
-                  <p className="font-semibold text-slate-800">{d.buku}</p>
-                  <p className="text-xs text-slate-500">
-                    Kembali {formatTanggal(d.tanggal_kembali)} · terlambat{" "}
-                    {d.hariTelat} hari
-                  </p>
+                <div className="flex min-w-[200px] items-center gap-3">
+                  <div className="shrink-0">
+                    {d.cover_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={d.cover_url}
+                        alt={d.buku}
+                        className="h-12 w-9 rounded-md border border-slate-200 object-cover shadow-sm"
+                      />
+                    ) : (
+                      <span className="flex h-12 w-9 items-center justify-center rounded-md bg-gradient-to-br from-slate-100 to-slate-200 text-slate-300">
+                        <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A1.5 1.5 0 0021.75 19.5V4.5A1.5 1.5 0 0020.25 3H3.75A1.5 1.5 0 002.25 4.5v15A1.5 1.5 0 003.75 21z" />
+                        </svg>
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-slate-800">{d.buku}</p>
+                    <p className="text-xs text-slate-500">
+                      Kembali {formatTanggal(d.tanggal_kembali)} · terlambat{" "}
+                      {d.hariTelat} hari
+                    </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="text-right">
@@ -196,7 +214,23 @@ export default function SiswaProfil() {
               {profil.riwayat.map((t) => (
                 <tr key={t.id} className="hover:bg-slate-50">
                   <td className="py-3 pr-3 font-medium text-slate-900">
-                    {t.buku?.judul ?? "-"}
+                    <div className="flex items-center gap-3">
+                      {t.buku?.cover_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={t.buku.cover_url}
+                          alt={t.buku?.judul ?? "Sampul"}
+                          className="h-12 w-9 shrink-0 rounded-md border border-slate-200 object-cover shadow-sm"
+                        />
+                      ) : (
+                        <span className="flex h-12 w-9 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-slate-100 to-slate-200 text-slate-300">
+                          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A1.5 1.5 0 0021.75 19.5V4.5A1.5 1.5 0 0020.25 3H3.75A1.5 1.5 0 002.25 4.5v15A1.5 1.5 0 003.75 21z" />
+                          </svg>
+                        </span>
+                      )}
+                      <span>{t.buku?.judul ?? "-"}</span>
+                    </div>
                   </td>
                   <td className="py-3 pr-3 text-slate-600">
                     {formatTanggal(t.tanggal_pinjam)}

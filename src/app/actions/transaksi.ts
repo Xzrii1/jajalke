@@ -14,7 +14,7 @@ import {
 import type { ActionResult, Transaksi, User } from "@/lib/types";
 
 const BASE_SELECT =
-  "*, user:users(username, nama_lengkap, kelas, no_induk), buku:buku(judul, penulis, kategori, isbn)";
+  "*, user:users(username, nama_lengkap, kelas, no_induk), buku:buku(judul, penulis, kategori, isbn, cover_url)";
 
 function mapRow(row: Transaksi, dendaPerHari: number): Transaksi {
   return normalizeTransaksi(row, dendaPerHari);

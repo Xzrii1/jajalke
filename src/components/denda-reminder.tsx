@@ -64,11 +64,29 @@ export function DendaReminder() {
           {denda.map((d) => (
             <Card key={d.transaksi_id} className="!p-3">
               <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-800">{d.buku}</p>
-                  <p className="text-xs text-slate-500">
-                    Kembali {formatTanggal(d.tanggal_kembali)} · terlambat {d.hariTelat} hari
-                  </p>
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="shrink-0">
+                    {d.cover_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={d.cover_url}
+                        alt={d.buku}
+                        className="h-11 w-8 rounded border border-slate-200 object-cover shadow-sm"
+                      />
+                    ) : (
+                      <span className="flex h-11 w-8 items-center justify-center rounded bg-gradient-to-br from-slate-100 to-slate-200 text-slate-300">
+                        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A1.5 1.5 0 0021.75 19.5V4.5A1.5 1.5 0 0020.25 3H3.75A1.5 1.5 0 002.25 4.5v15A1.5 1.5 0 003.75 21z" />
+                        </svg>
+                      </span>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-slate-800">{d.buku}</p>
+                    <p className="text-xs text-slate-500">
+                      Kembali {formatTanggal(d.tanggal_kembali)} · terlambat {d.hariTelat} hari
+                    </p>
+                  </div>
                 </div>
                 <button
                   type="button"

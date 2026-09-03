@@ -85,6 +85,7 @@ export interface Transaksi {
     penulis: string | null;
     kategori: string | null;
     isbn: string | null;
+    cover_url: string | null;
   };
 }
 
