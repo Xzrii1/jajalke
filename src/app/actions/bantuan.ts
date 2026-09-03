@@ -1,6 +1,6 @@
 "use server";
 
-import { requirePetugasAdmin, requireUser } from "@/lib/auth";
+import { getCurrentUser, requirePetugasAdmin } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
 import type { ActionResult, JenisBantuan, PermintaanBantuan, StatusBantuan } from "@/lib/types";
 
@@ -29,8 +29,9 @@ export async function kirimPermintaanBantuan(input: {
   subjek: string;
   pesan: string;
 }): Promise<ActionResult> {
-  const user = await requireUser();
+  const user = await getCurrentUser();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  if (!user) return { error: "Kamu harus masuk terlebih dahulu untuk mengirim permintaan." };
 
   const subjek = (input.subjek ?? "").trim();
   const pesan = (input.pesan ?? "").trim();
@@ -65,8 +66,9 @@ export async function getPermintaanSaya(): Promise<{
   data?: PermintaanBantuan[];
   error?: string;
 }> {
-  const user = await requireUser();
+  const user = await getCurrentUser();
   if (!isSupabaseConfigured) return { error: CONFIG_ERROR_MESSAGE };
+  if (!user) return { error: "Kamu harus masuk terlebih dahulu untuk melihat permintaan." };
 
   const { data, error } = await getSupabase()
     .from("permintaan_bantuan")

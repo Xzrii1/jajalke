@@ -51,7 +51,7 @@ const faq = [
   },
 ];
 
-export default function BantuanClient() {
+export default function BantuanClient({ isLoggedIn }: { isLoggedIn: boolean }) {
   const [jenis, setJenis] = useState<JenisBantuan>("reset_password");
   const [subjek, setSubjek] = useState("");
   const [pesan, setPesan] = useState("");
@@ -60,16 +60,21 @@ export default function BantuanClient() {
 
   const [riwayat, setRiwayat] = useState<PermintaanBantuan[]>([]);
   const [riwayatError, setRiwayatError] = useState<string | null>(null);
-  const [riwayatLoading, setRiwayatLoading] = useState(true);
+  const [riwayatLoading, setRiwayatLoading] = useState(Boolean(isLoggedIn));
 
   const load = useCallback(async () => {
+    if (!isLoggedIn) {
+      setRiwayatLoading(false);
+      return;
+    }
     const res = await getPermintaanSaya();
     if (res.error) setRiwayatError(res.error);
     else setRiwayat(res.data ?? []);
     setRiwayatLoading(false);
-  }, []);
+  }, [isLoggedIn]);
 
   useEffect(() => {
+    if (!isLoggedIn) return;
     let cancelled = false;
     getPermintaanSaya().then((res) => {
       if (cancelled) return;
@@ -80,7 +85,7 @@ export default function BantuanClient() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [isLoggedIn]);
 
   async function handleSubmit() {
     setSubmitting(true);
@@ -130,6 +135,20 @@ export default function BantuanClient() {
             <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Kirim permintaan bantuan
             </h2>
+            {!isLoggedIn ? (
+              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+                <p className="text-sm text-slate-600">
+                  Kamu perlu masuk terlebih dahulu untuk mengirim permintaan
+                  bantuan ke tim perpustakaan.
+                </p>
+                <a
+                  href="/login?next=/bantuan"
+                  className="mt-3 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                >
+                  Masuk untuk melanjutkan
+                </a>
+              </div>
+            ) : (
             <div className="mt-4 space-y-4">
               {message?.error && <Alert kind="error">{message.error}</Alert>}
               {message?.success && <Alert kind="success">{message.success}</Alert>}
@@ -177,13 +196,26 @@ export default function BantuanClient() {
                 {submitting ? "Mengirim..." : "Kirim Permintaan"}
               </Button>
             </div>
+            )}
           </Card>
 
           <Card>
             <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Riwayat permintaan saya
             </h2>
-            {riwayatLoading ? (
+            {!isLoggedIn ? (
+              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-center">
+                <p className="text-sm text-slate-600">
+                  Masuk untuk melihat dan mengirim permintaan bantuan.
+                </p>
+                <a
+                  href="/login?next=/bantuan"
+                  className="mt-3 inline-flex rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                >
+                  Masuk ke akun
+                </a>
+              </div>
+            ) : riwayatLoading ? (
               <Spinner label="Memuat..." />
             ) : riwayatError ? (
               <p className="mt-4 text-sm text-rose-600">{riwayatError}</p>
