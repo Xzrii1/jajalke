@@ -10,33 +10,6 @@ export type TransaksiStatus =
 
 export type KondisiBuku = "baru" | "baik" | "bekas" | "rusak";
 
-export type JenisBantuan =
-  | "reset_password"
-  | "pertanyaan"
-  | "keluhan"
-  | "lainnya";
-
-export type StatusBantuan = "baru" | "diproses" | "selesai";
-
-export interface PermintaanBantuan {
-  id: string;
-  user_id: string;
-  jenis: JenisBantuan;
-  subjek: string;
-  pesan: string;
-  status: StatusBantuan;
-  balasan: string | null;
-  updated_at: string;
-  created_at: string;
-  user?: {
-    username: string;
-    nama_lengkap: string;
-    role: Role;
-    kelas: string | null;
-    no_induk: string | null;
-  };
-}
-
 export interface User {
   id: string;
   username: string;

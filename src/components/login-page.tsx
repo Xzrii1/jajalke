@@ -1,5 +1,6 @@
 "use client";
 
+import { WhatsAppButton } from "@/components/whatsapp-button";
 import { useState } from "react";
 import { AuthShell } from "@/components/auth-shell";
 import { LoginForm } from "@/components/login-form";
@@ -36,6 +37,12 @@ export function LoginPageContent({
         setRole={setRole}
         theme={theme}
       />
+      <div className="mt-4 text-center">
+        <WhatsAppButton
+          label="Butuh bantuan? Hubungi kami via WhatsApp"
+          className="w-full max-w-md"
+        />
+      </div>
     </AuthShell>
   );
 }
