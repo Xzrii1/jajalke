@@ -7,6 +7,7 @@ import { getPengaturan, updateDendaPerHari, type Pengaturan } from "@/app/action
 import { Alert, Button, Card, Field, Input, Spinner } from "@/components/ui";
 import { AdminChart } from "@/components/admin-chart";
 import { LiveClock } from "@/components/live-clock";
+import { JamOperasionalCard } from "@/components/jam-operasional-card";
 import type { ActionResult } from "@/lib/types";
 
 function StatCard({
@@ -209,6 +210,8 @@ export default function AdminDashboard() {
           <div className="mt-3"><Alert kind="success">{settingsMsg.success}</Alert></div>
         )}
       </Card>
+
+      <JamOperasionalCard editable={stats?.role === "petugas"} />
 
       <Card className="anim-chart card-lift p-5 sm:p-6">
         <AdminChart />

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getSiswaStats, type SiswaStats } from "@/app/actions/transaksi";
 import { Alert, Card, Spinner } from "@/components/ui";
 import { LiveClock } from "@/components/live-clock";
+import { JamOperasionalCard } from "@/components/jam-operasional-card";
 import { formatRupiah } from "@/lib/utils";
 
 export default function SiswaDashboard() {
@@ -44,6 +45,8 @@ export default function SiswaDashboard() {
       </div>
 
       {error && <Alert kind="info">{error}</Alert>}
+
+      <JamOperasionalCard />
 
       {stats && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
