@@ -3,6 +3,7 @@
 import { requirePetugas, requireUser } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
 import { KONDISI_OPTIONS } from "@/lib/kondisi";
+import { ilikeOr } from "@/lib/utils";
 import type { ActionResult, Buku, KondisiBuku } from "@/lib/types";
 
 export interface BukuInput {
@@ -44,7 +45,12 @@ export async function getBukuList(opts: {
   const search = (opts.search ?? "").trim();
   if (search) {
     query = query.or(
-      `judul.ilike.%${search}%,penulis.ilike.%${search}%,kategori.ilike.%${search}%,isbn.ilike.%${search}%`
+      [
+        ilikeOr("judul", search),
+        ilikeOr("penulis", search),
+        ilikeOr("kategori", search),
+        ilikeOr("isbn", search),
+      ].join(",")
     );
   }
   if (opts.kategori) {

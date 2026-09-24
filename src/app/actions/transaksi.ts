@@ -2,6 +2,7 @@
 
 import { requirePetugasAdmin, requireSiswa } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
+import { ilikeOr } from "@/lib/utils";
 import { getDendaPerHari } from "@/app/actions/pengaturan";
 import {
   addDays,
@@ -43,7 +44,12 @@ export async function getTransaksiList(opts: {
   const search = (opts.search ?? "").trim();
   if (search) {
     query = query.or(
-      `user.nama_lengkap.ilike.%${search}%,user.username.ilike.%${search}%,buku.judul.ilike.%${search}%,buku.penulis.ilike.%${search}%`
+      [
+        ilikeOr("user.nama_lengkap", search),
+        ilikeOr("user.username", search),
+        ilikeOr("buku.judul", search),
+        ilikeOr("buku.penulis", search),
+      ].join(",")
     );
   }
   if (opts.status && opts.status !== "semua") {

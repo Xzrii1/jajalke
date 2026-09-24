@@ -106,3 +106,13 @@ export function formatTanggal(isoDate: string | null | undefined): string {
 export function formatRupiah(n: number): string {
   return "Rp " + (n ?? 0).toLocaleString("id-ID");
 }
+
+/**
+ * Bangun filter ilike yang aman untuk query `.or()` PostgREST.
+ * Nilai dibungkus tanda kutip ganda agar karakter khusus (koma, kurung, kutip)
+ * di dalam kata kunci tidak merusak parser filter.
+ */
+export function ilikeOr(col: string, val: string): string {
+  const escaped = val.replace(/"/g, '""');
+  return `${col}.ilike."%${escaped}%"`;
+}

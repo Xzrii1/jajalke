@@ -3,6 +3,7 @@
 import { hash } from "bcryptjs";
 import { requirePetugasAdmin } from "@/lib/auth";
 import { getSupabase, isSupabaseConfigured, CONFIG_ERROR_MESSAGE } from "@/lib/supabase";
+import { ilikeOr } from "@/lib/utils";
 import type { ActionResult, User } from "@/lib/types";
 
 export interface AnggotaInput {
@@ -33,7 +34,12 @@ export async function getAnggotaList(opts: {
   const search = (opts.search ?? "").trim();
   if (search) {
     query = query.or(
-      `nama_lengkap.ilike.%${search}%,username.ilike.%${search}%,no_induk.ilike.%${search}%,kelas.ilike.%${search}%`
+      [
+        ilikeOr("nama_lengkap", search),
+        ilikeOr("username", search),
+        ilikeOr("no_induk", search),
+        ilikeOr("kelas", search),
+      ].join(",")
     );
   }
 
