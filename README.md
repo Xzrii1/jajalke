@@ -42,7 +42,8 @@ Skema soal memakai **`username`** (bukan email) dan kolom `role` di satu tabel `
 | CRUD Kelola Anggota (**hanya siswa**)                   | ❌    | ✅      | ✅   |
 | Laporan transaksi (Excel/PDF/cetak)                     | ❌    | ✅      | ✅   |
 | Jam realtime (WIB) di dashboard                          | ✅    | ✅      | ✅   |
-| Kelola akun admin/petugas (promosi/ubah/hapus)          | ❌    | ❌      | ✅   |
+| Jam operasional perpustakaan (lihat/atur)               | ✅    | ✅ atur | ✅   |
+| CRUD akun petugas                                        | ❌    | ❌      | ✅   |
 | Pencarian buku (judul/penulis/kategori/ISBN)            | ✅    | ✅      | ✅   |
 | Cetak struk peminjaman                                   | ✅    | ✅      | ✅   |
 | Pengingat denda belum lunas (popup)                      | ✅    | ❌      | ❌   |
@@ -53,17 +54,18 @@ Halaman:
 - `/` — beranda (info fitur + prosedur peminjaman; redirect sesuai sesi)
 - `/login` — form login dengan tab pilihan role
 - `/daftar` — registrasi anggota (siswa)
-- `/admin/dashboard` — ringkasan jumlah buku, anggota, peminjaman aktif + grafik + jam realtime + menu pengaturan tarif denda
+- `/admin/dashboard` — ringkasan jumlah buku, anggota, peminjaman aktif + grafik + jam realtime + pengaturan tarif denda (admin) + atur jam operasional (petugas)
 - `/admin/buku` — CRUD data buku + pencarian (**khusus petugas**, admin diarahkan ke dashboard)
 - `/admin/anggota` — CRUD kelola anggota (siswa)
+- `/admin/petugas` — CRUD akun petugas (**khusus admin**)
 - `/admin/transaksi` — CRUD semua transaksi peminjaman + persetujuan pinjam/kembali + cetak struk
 - `/admin/laporan` — laporan transaksi (Excel/PDF/cetak)
-- `/siswa/dashboard` — ringkasan pinjaman siswa + jam realtime + prosedur pinjam
+- `/siswa/dashboard` — ringkasan pinjaman siswa + jam realtime + jam operasional + prosedur pinjam
 - `/siswa/buku` — daftar & pencarian buku (+ kondisi fisik + rating) + tombol pinjam
 - `/siswa/transaksi` — riwayat pinjaman + tombol kembalikan + cetak struk
 - `/siswa/profil` — profil siswa, daftar denda belum lunas, bayar via QRIS (demo)
 
-> `/admin/*` dapat diakses oleh **Admin** dan **Petugas**, kecuali `/admin/buku` yang **petugas-only**. Siswa hanya memakai `/siswa/*`.
+> `/admin/*` dapat diakses oleh **Admin** dan **Petugas**, kecuali `/admin/buku` yang **petugas-only** dan `/admin/petugas` yang **admin-only**. Siswa hanya memakai `/siswa/*`.
 
 Aturan bisnis:
 - Alur persetujuan: pinjam → **Menunggu Persetujuan** → disetujui (**Dipinjam**) atau **Ditolak**; pengembalian juga butuh persetujuan petugas (**Menunggu Kembali**).
@@ -73,6 +75,7 @@ Aturan bisnis:
 - Terlambat otomatis terdeteksi; denda per hari diambil dari pengaturan `denda_per_hari` (default **Rp 1.000/hari**, bisa diubah admin).
 - Denda **berhenti bertambah** setelah buku dikembalikan, tapi **tetap tercatat sampai lunas** (`sisa = denda - denda_bayar`).
 - Rating & komentar hanya untuk siswa yang pernah meminjam buku tsb; satu ulasan per siswa per buku.
+- Jam operasional perpustakaan diatur **petugas** (per hari, Senin–Sabtu default `08.00–16.00`, Minggu libur); siswa & admin hanya melihat.
 
 ## Struktur Project
 
@@ -88,16 +91,17 @@ Aturan bisnis:
 │   ├── migrations/0008_denda.sql       # Kolom denda_bayar + tabel pembayaran_denda
 │   ├── migrations/0009_pengaturan.sql  # Pengaturan aplikasi (tarif denda/hari)
 │   ├── migrations/0010_kondisi.sql     # Kolom kondisi fisik buku
+│   ├── migrations/0011_jam.sql         # Seed jam operasional (opsional)
 │   └── seed.sql                        # Data contoh buku (opsional)
 └── src/
     ├── proxy.ts                  # Proteksi route per role (JWT)
-    ├── lib/                      # supabase client, session JWT, auth, utils, types, kondisi, struk
+    ├── lib/                      # supabase client, session JWT, auth, utils, types, kondisi, jamOperasional, struk
     ├── app/
-    │   ├── actions/              # Server actions (auth, buku, anggota, transaksi, ulasan, profil, pengaturan)
+    │   ├── actions/              # Server actions (auth, buku, anggota, transaksi, ulasan, profil, pengaturan, petugas, jamOperasional)
     │   ├── admin/...             # Halaman admin
     │   ├── siswa/...             # Halaman siswa
     │   └── ...                   # Landing, login, daftar
-    └── components/               # UI primitives + form + nav + book-rating + denda-reminder
+    └── components/               # UI primitives + form + nav + book-rating + denda-reminder + jam-operasional-card
 ```
 
 ## Setup Lokal
@@ -136,7 +140,9 @@ Buka **Supabase Dashboard → SQL Editor**, jalankan isi `supabase/migrations/00
 - `0009_pengaturan.sql` — tabel pengaturan (tarif denda `denda_per_hari`, default 1000).
 - `0010_kondisi.sql` — kolom `kondisi` pada tabel buku (baru/baik/bekas/rusak).
 
-Opsional: `supabase/seed.sql` untuk data contoh buku.
+Opsional:
+- `supabase/seed.sql` — data contoh buku.
+- `0011_jam.sql` — seed jam operasional default (Senin–Sabtu, Minggu libur). Bila dilewati, aplikasi tetap berjalan dan petugas bisa mengatur dari dashboard.
 
 > **Catatan keamanan (P0 / wajib bagi deploy publik):** RLS pada tabel-tabel Supabase **saat ini nonaktif**, sehingga `SUPABASE_ANON_KEY` publik bisa membaca/menulis tabel (termasuk kolom `password_hash`). Ini disengaja **sementara** untuk kemudahan pengembangan. **Jangan** deploy ke publik tanpa menutup ini. Langkah aman yang direncanakan: (1) set `SUPABASE_SERVICE_ROLE_KEY` di Vercel, (2) pindahkan kode akses DB ke service_role, (3) aktifkan migration RLS + rotasi password. (Cadangan migration tersedia di stash `wip-rls-migration`.) Sampai RLS aktif, jangan isi data sensitif di Supabase.
 
@@ -147,7 +153,7 @@ npm install
 npm run seed:admin   # membaca ADMIN_SEED_USERNAME & ADMIN_SEED_PASSWORD dari .env.local
 ```
 
-Akun **petugas** (mini-admin) dibuat lewat migration `0005_petugas.sql` (username `petugas1`). Role `petugas` hanya bisa kelola buku, transaksi, dan akun **siswa** — ia **tidak** bisa membuat/ubah/hapus akun admin atau petugas lain.
+Akun **petugas** (mini-admin) dibuat lewat migration `0005_petugas.sql` (username `petugas1`) atau lewat menu **Kelola Petugas** (`/admin/petugas`, khusus admin). Role `petugas` hanya bisa kelola buku, transaksi, dan akun **siswa** — ia **tidak** bisa membuat/ubah/hapus akun admin atau petugas lain.
 
 ### 4. Jalankan aplikasi
 
@@ -171,16 +177,18 @@ Setelah Supabase dikonfigurasi, uji satu per satu:
 6. **Persetujuan petugas** → di Kelola Transaksi klik **Setujui** → stok berkurang, status **Dipinjam**, muncul tombol **Struk** → cetak struk peminjaman. Klik **Tolak** bila ingin menu **ditolak**.
 7. **Pengembalian** → siswa klik **Ajukan Kembali** (status **Menunggu Kembali**) → petugas **Setujui Kembali** → stok bertambah, denda dihitung jika terlambat.
 8. **Rating & komentar** → siswa yang pernah meminjam suatu buku bisa menilai (1–5 bintang) + komentar di halaman Cari Buku; petugas/admin melihat rating di kelola buku.
-9. **Login admin** → `/admin/dashboard` (statistik benar, grafik & jam tampil) + menu **Pengaturan** untuk mengubah tarif denda per hari.
+9. **Login admin** → `/admin/dashboard` (statistik benar, grafik & jam tampil) + **Pengaturan** tarif denda per hari.
 10. **Login petugas** (username `petugas1`) → bisa buka `/admin/*`; nav menampilkan badge "Petugas Perpustakaan". Menu **Kelola Buku** hanya tampil untuk petugas.
 11. **CRUD buku** **hanya petugas**: tambah/ubah/hapus (termasuk set kondisi fisik `baru`/`baik`/`bekas`/`rusak`) + pencarian. **Admin tidak bisa** membuka kelola buku (diarahkan ke dashboard).
 12. **CRUD anggota**: tambah/ubah/reset-password/hapus **hanya untuk siswa**.
 13. **Pembatasan petugas**: di halaman anggota, petugas **tidak** bisa mengubah/menghapus akun admin atau petugas lain.
-14. **Transaksi admin**: buat transaksi (pilih anggota+buku+tanggal), tandai dikembalikan, edit, hapus; filter status bekerja.
-15. **Denda & pembayaran** → setelah terlambat, di profil siswa muncul denda belum lunas; bayar via **QRIS (demo)** → popup pengingat denda hilang setelah lunas.
-16. **Laporan** `/admin/laporan` → export Excel, PDF, dan tombol cetak berfungsi.
-17. **Proteksi route**: siswa tidak bisa buka `/admin/*`, admin/petugas tidak bisa buka `/siswa/*`, user belum login diarahkan ke `/login`.
-18. **Logout** → kembali ke `/login`, halaman terproteksi tertutup.
+14. **Kelola akun petugas (khusus admin)**: buka `/admin/petugas` → tambah/ubah/reset-password/hapus petugas. Menu ini **tidak tampil** untuk petugas, dan akun admin hanya tampil tanpa tombol aksi.
+15. **Jam operasional**: petugas atur jam per hari (centang **Libur** untuk hari tutup; validasi jam buka < jam tutup) → siswa & admin melihat hasilnya di dashboard masing-masing dengan hari ini ditandai.
+16. **Transaksi admin**: buat transaksi (pilih anggota+buku+tanggal), tandai dikembalikan, edit, hapus; filter status bekerja.
+17. **Denda & pembayaran** → setelah terlambat, di profil siswa muncul denda belum lunas; bayar via **QRIS (demo)** → popup pengingat denda hilang setelah lunas.
+18. **Laporan** `/admin/laporan` → export Excel, PDF, dan tombol cetak berfungsi.
+19. **Proteksi route**: siswa tidak bisa buka `/admin/*`, admin/petugas tidak bisa buka `/siswa/*`, user belum login diarahkan ke `/login`.
+20. **Logout** → kembali ke `/login`, halaman terproteksi tertutup.
 
 Cek error di **browser console** dan terminal setiap langkah.
 
