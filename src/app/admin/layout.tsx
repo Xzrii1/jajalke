@@ -24,6 +24,9 @@ export default async function AdminLayout({
           ...(user.role === "petugas"
             ? [{ href: "/admin/buku", label: "Kelola Buku" }]
             : []),
+          ...(user.role === "admin"
+            ? [{ href: "/admin/petugas", label: "Kelola Petugas" }]
+            : []),
           { href: "/admin/anggota", label: "Kelola Anggota" },
           { href: "/admin/transaksi", label: "Transaksi" },
           { href: "/admin/laporan", label: "Laporan" },

@@ -110,6 +110,7 @@ const badgeStyles: Record<string, string> = {
   terlambat: "bg-rose-100 text-rose-800",
   aktif: "bg-indigo-100 text-indigo-800",
   admin: "bg-violet-100 text-violet-800",
+  petugas: "bg-sky-100 text-sky-800",
   siswa: "bg-teal-100 text-teal-800",
   tersedia: "bg-emerald-100 text-emerald-800",
   habis: "bg-slate-200 text-slate-700",

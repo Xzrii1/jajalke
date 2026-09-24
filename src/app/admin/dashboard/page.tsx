@@ -247,6 +247,23 @@ export default function AdminDashboard() {
             <span aria-hidden>→</span>
           </Link>
         </Card>
+        {stats?.role === "admin" && (
+          <Card className="card-lift">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-sky-500">
+              Kelola Petugas
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              Tambah dan kelola akun petugas perpustakaan.
+            </p>
+            <Link
+              href="/admin/petugas"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
+            >
+              Buka menu
+              <span aria-hidden>→</span>
+            </Link>
+          </Card>
+        )}
         <Card className="card-lift">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-emerald-500">
             Transaksi
