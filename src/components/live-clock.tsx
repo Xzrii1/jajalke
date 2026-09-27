@@ -33,7 +33,7 @@ export function LiveClock() {
   }, []);
 
   return (
-    <div className="inline-flex shrink-0 items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5 shadow-sm">
+    <div className="inline-flex shrink-0 items-center gap-3 rounded-2xl border border-slate-200/80 bg-white/90 px-4 py-2.5 shadow-[0_1px_3px_rgba(15,23,42,0.06)] backdrop-blur-sm">
       <span className="relative flex h-2.5 w-2.5" aria-hidden>
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75 motion-reduce:hidden" />
         <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-indigo-500" />

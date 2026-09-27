@@ -8,32 +8,48 @@ import { Alert, Button, Card, Field, Input, Spinner } from "@/components/ui";
 import { AdminChart } from "@/components/admin-chart";
 import { LiveClock } from "@/components/live-clock";
 import { JamOperasionalCard } from "@/components/jam-operasional-card";
+import { Counter, Reveal, Stagger, StaggerItem } from "@/components/motion";
 import type { ActionResult } from "@/lib/types";
+
+const statAccents: Record<string, string> = {
+  indigo: "bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-lg shadow-indigo-500/30",
+  violet: "bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg shadow-violet-500/30",
+  emerald: "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30",
+  sky: "bg-gradient-to-br from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30",
+  amber: "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30",
+  orange: "bg-gradient-to-br from-orange-500 to-rose-600 text-white shadow-lg shadow-orange-500/30",
+};
 
 function StatCard({
   label,
   value,
   icon,
   href,
+  accent = "indigo",
 }: {
   label: string;
   value: number | string;
   icon: React.ReactNode;
   href: string;
+  accent?: string;
 }) {
   return (
     <Link href={href}>
-      <Card className="card-lift group h-full hover:border-indigo-300">
+      <Card className="card-lift group h-full">
         <div className="flex items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               {label}
             </p>
             <p className="mt-1.5 text-3xl font-semibold tracking-tight text-slate-900">
-              {value}
+              <Counter value={typeof value === "number" ? value : Number(value) || 0} />
             </p>
           </div>
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-500 transition-transform duration-300 group-hover:scale-110">
+          <span
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3 ${
+              statAccents[accent] ?? statAccents.indigo
+            }`}
+          >
             {icon}
           </span>
         </div>
@@ -134,155 +150,171 @@ export default function AdminDashboard() {
   if (loading) return <Spinner label="Memuat dashboard..." />;
 
   return (
-    <div className="anim-rise space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
-            Dashboard Admin
-          </h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Ringkasan kondisi perpustakaan sekolah.
-          </p>
+    <div className="space-y-6">
+      <Reveal>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
+              Dashboard Admin
+            </h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Ringkasan kondisi perpustakaan sekolah.
+            </p>
+          </div>
+          <LiveClock />
         </div>
-        <LiveClock />
-      </div>
+      </Reveal>
 
       {error && <Alert kind="info">{error}</Alert>}
 
       {stats && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          <div className="anim-rise d-1"><StatCard label="Total Judul Buku" value={stats.totalBuku} icon={statIcons.buku} href="/admin/buku" /></div>
-          <div className="anim-rise d-1"><StatCard label="Total Stok Buku" value={stats.totalStok} icon={statIcons.stok} href="/admin/buku" /></div>
-          <div className="anim-rise d-2"><StatCard label="Jumlah Anggota" value={stats.totalAnggota} icon={statIcons.anggota} href="/admin/anggota" /></div>
-          <div className="anim-rise d-2"><StatCard label="Peminjaman Aktif" value={stats.transaksiAktif} icon={statIcons.aktif} href="/admin/transaksi" /></div>
-          <div className="anim-rise d-3"><StatCard label="Ajuan Pinjam" value={stats.transaksiPending} icon={statIcons.pending} href="/admin/transaksi" /></div>
-          <div className="anim-rise d-3"><StatCard label="Ajuan Kembali" value={stats.menungguKembali} icon={statIcons.menungguKembali} href="/admin/transaksi" /></div>
-        </div>
+        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <StaggerItem><StatCard label="Total Judul Buku" value={stats.totalBuku} icon={statIcons.buku} href="/admin/buku" accent="indigo" /></StaggerItem>
+          <StaggerItem><StatCard label="Total Stok Buku" value={stats.totalStok} icon={statIcons.stok} href="/admin/buku" accent="violet" /></StaggerItem>
+          <StaggerItem><StatCard label="Jumlah Anggota" value={stats.totalAnggota} icon={statIcons.anggota} href="/admin/anggota" accent="emerald" /></StaggerItem>
+          <StaggerItem><StatCard label="Peminjaman Aktif" value={stats.transaksiAktif} icon={statIcons.aktif} href="/admin/transaksi" accent="sky" /></StaggerItem>
+          <StaggerItem><StatCard label="Ajuan Pinjam" value={stats.transaksiPending} icon={statIcons.pending} href="/admin/transaksi" accent="amber" /></StaggerItem>
+          <StaggerItem><StatCard label="Ajuan Kembali" value={stats.menungguKembali} icon={statIcons.menungguKembali} href="/admin/transaksi" accent="orange" /></StaggerItem>
+        </Stagger>
       )}
 
-      <Card className="card-lift">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="min-w-[260px] flex-1">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-              Pengaturan Denda
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Tarif denda keterlambatan pengembalian buku per hari. Berlaku untuk
-              peminjaman yang disetujui setelah disimpan.
-            </p>
-            {pengaturan?.dendaPerHari !== undefined && (
-              <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-sm font-semibold text-rose-700">
-                Rp {pengaturan.dendaPerHari.toLocaleString("id-ID")} / hari
+      <Reveal delay={0.06}>
+        <Card className="card-lift">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-[260px] flex-1">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                Pengaturan Denda
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Tarif denda keterlambatan pengembalian buku per hari. Berlaku untuk
+                peminjaman yang disetujui setelah disimpan.
+              </p>
+              {pengaturan?.dendaPerHari !== undefined && (
+                <p className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1 text-sm font-semibold text-rose-700 ring-1 ring-inset ring-rose-600/15">
+                  Rp {pengaturan.dendaPerHari.toLocaleString("id-ID")} / hari
+                </p>
+              )}
+            </div>
+            {pengaturan?.canEdit ? (
+              <div className="w-full sm:w-72">
+                <Field label="Tarif denda (Rp/hari)">
+                  <div className="flex gap-2">
+                    <Input
+                      value={dendaInput}
+                      onChange={(e) => setDendaInput(e.target.value)}
+                      type="number"
+                      min={0}
+                      placeholder="1000"
+                      disabled={saving}
+                    />
+                    <Button onClick={handleSaveDenda} disabled={saving || !dendaInput.trim()}>
+                      {saving ? "Menyimpan..." : "Simpan"}
+                    </Button>
+                  </div>
+                </Field>
+              </div>
+            ) : (
+              <p className="flex items-center gap-2 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-500">
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Hanya akun <b>Admin</b> yang dapat mengubah tarif denda.
               </p>
             )}
           </div>
-          {pengaturan?.canEdit ? (
-            <div className="w-full sm:w-72">
-              <Field label="Tarif denda (Rp/hari)">
-                <div className="flex gap-2">
-                  <Input
-                    value={dendaInput}
-                    onChange={(e) => setDendaInput(e.target.value)}
-                    type="number"
-                    min={0}
-                    placeholder="1000"
-                    disabled={saving}
-                  />
-                  <Button onClick={handleSaveDenda} disabled={saving || !dendaInput.trim()}>
-                    {saving ? "Menyimpan..." : "Simpan"}
-                  </Button>
-                </div>
-              </Field>
-            </div>
-          ) : (
-            <p className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
-              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-              Hanya akun <b>Admin</b> yang dapat mengubah tarif denda.
-            </p>
+          {settingsMsg?.error && (
+            <div className="mt-3"><Alert kind="error">{settingsMsg.error}</Alert></div>
           )}
-        </div>
-        {settingsMsg?.error && (
-          <div className="mt-3"><Alert kind="error">{settingsMsg.error}</Alert></div>
-        )}
-        {settingsMsg?.success && (
-          <div className="mt-3"><Alert kind="success">{settingsMsg.success}</Alert></div>
-        )}
-      </Card>
-
-      <JamOperasionalCard editable={stats?.role === "petugas"} />
-
-      <Card className="anim-chart card-lift p-5 sm:p-6">
-        <AdminChart />
-      </Card>
-
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {stats?.role === "petugas" && (
-          <Card className="card-lift">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-indigo-500">
-              Kelola Data Buku
-            </h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Tambah, ubah, hapus, dan cari data buku perpustakaan.
-            </p>
-            <Link
-              href="/admin/buku"
-              className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 transition group-hover:gap-2 hover:underline"
-            >
-              Buka menu
-              <span aria-hidden>→</span>
-            </Link>
-          </Card>
-        )}
-        <Card className="card-lift">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-amber-500">
-            Kelola Anggota
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            Daftar akun siswa dan kelola keanggotaan perpustakaan.
-          </p>
-          <Link
-            href="/admin/anggota"
-            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
-          >
-            Buka menu
-            <span aria-hidden>→</span>
-          </Link>
+          {settingsMsg?.success && (
+            <div className="mt-3"><Alert kind="success">{settingsMsg.success}</Alert></div>
+          )}
         </Card>
-        {stats?.role === "admin" && (
-          <Card className="card-lift">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-sky-500">
-              Kelola Petugas
+      </Reveal>
+
+      <Reveal delay={0.08}>
+        <JamOperasionalCard editable={stats?.role === "petugas"} />
+      </Reveal>
+
+      <Reveal delay={0.1}>
+        <Card className="anim-chart card-lift p-5 sm:p-6">
+          <AdminChart />
+        </Card>
+      </Reveal>
+
+      <Stagger className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {stats?.role === "petugas" && (
+          <StaggerItem>
+            <Card className="card-lift h-full">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-indigo-500">
+                Kelola Data Buku
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Tambah, ubah, hapus, dan cari data buku perpustakaan.
+              </p>
+              <Link
+                href="/admin/buku"
+                className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 transition group-hover:gap-2 hover:underline"
+              >
+                Buka menu
+                <span aria-hidden>→</span>
+              </Link>
+            </Card>
+          </StaggerItem>
+        )}
+        <StaggerItem>
+          <Card className="card-lift h-full">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-amber-500">
+              Kelola Anggota
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600">
-              Tambah dan kelola akun petugas perpustakaan.
+              Daftar akun siswa dan kelola keanggotaan perpustakaan.
             </p>
             <Link
-              href="/admin/petugas"
+              href="/admin/anggota"
               className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
             >
               Buka menu
               <span aria-hidden>→</span>
             </Link>
           </Card>
+        </StaggerItem>
+        {stats?.role === "admin" && (
+          <StaggerItem>
+            <Card className="card-lift h-full">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-sky-500">
+                Kelola Petugas
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                Tambah dan kelola akun petugas perpustakaan.
+              </p>
+              <Link
+                href="/admin/petugas"
+                className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
+              >
+                Buka menu
+                <span aria-hidden>→</span>
+              </Link>
+            </Card>
+          </StaggerItem>
         )}
-        <Card className="card-lift">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-emerald-500">
-            Transaksi
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-slate-600">
-            Pantau dan kelola seluruh peminjaman &amp; pengembalian buku.
-          </p>
-          <Link
-            href="/admin/transaksi"
-            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
-          >
-            Buka menu
-            <span aria-hidden>→</span>
-          </Link>
-        </Card>
-      </div>
+        <StaggerItem>
+          <Card className="card-lift h-full">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-emerald-500">
+              Transaksi
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">
+              Pantau dan kelola seluruh peminjaman &amp; pengembalian buku.
+            </p>
+            <Link
+              href="/admin/transaksi"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
+            >
+              Buka menu
+              <span aria-hidden>→</span>
+            </Link>
+          </Card>
+        </StaggerItem>
+      </Stagger>
     </div>
   );
 }

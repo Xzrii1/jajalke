@@ -13,6 +13,7 @@ import {
   EmptyState,
   Spinner,
 } from "@/components/ui";
+import { Reveal } from "@/components/motion";
 
 const statusTone: Record<TransaksiStatus, string> = {
   pending: "pending",
@@ -85,15 +86,17 @@ export default function SiswaTransaksi() {
   const jumlahDenda = transaksi.reduce((sum, t) => sum + dendaSisa(t), 0);
 
   return (
-    <div className="anim-rise space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Peminjaman Saya</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {aktif.length} buku sedang dipinjam · total denda {formatRupiah(jumlahDenda)}
-          </p>
+    <div className="space-y-5">
+      <Reveal>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Peminjaman Saya</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              {aktif.length} buku sedang dipinjam · total denda {formatRupiah(jumlahDenda)}
+            </p>
+          </div>
         </div>
-      </div>
+      </Reveal>
 
       {message?.error && <Alert kind="error">{message.error}</Alert>}
       {message?.success && <Alert kind="success">{message.success}</Alert>}

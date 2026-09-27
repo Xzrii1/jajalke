@@ -29,6 +29,7 @@ import {
   Select,
   Spinner,
 } from "@/components/ui";
+import { Reveal } from "@/components/motion";
 
 const statusTone: Record<TransaksiStatus, string> = {
   pending: "pending",
@@ -239,18 +240,20 @@ export default function AdminTransaksi() {
   }
 
   return (
-    <div className="anim-rise space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Transaksi Peminjaman</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Kelola seluruh peminjaman dan pengembalian buku.
-          </p>
+    <div className="space-y-5">
+      <Reveal>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Transaksi Peminjaman</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              Kelola seluruh peminjaman dan pengembalian buku.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button onClick={openCreate}>+ Buat Transaksi</Button>
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button onClick={openCreate}>+ Buat Transaksi</Button>
-        </div>
-      </div>
+      </Reveal>
 
       {message?.error && <Alert kind="error">{message.error}</Alert>}
       {message?.success && <Alert kind="success">{message.success}</Alert>}

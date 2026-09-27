@@ -20,6 +20,7 @@ import {
   Modal,
   Spinner,
 } from "@/components/ui";
+import { Reveal } from "@/components/motion";
 
 interface FormState {
   username: string;
@@ -127,14 +128,16 @@ export default function AdminAnggota() {
   }
 
   return (
-    <div className="anim-rise space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Kelola Anggota</h1>
-          <p className="mt-1 text-sm text-slate-500">{anggota.length} siswa terdaftar</p>
+    <div className="space-y-5">
+      <Reveal>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Kelola Anggota</h1>
+            <p className="mt-1 text-sm text-slate-500">{anggota.length} siswa terdaftar</p>
+          </div>
+          <Button onClick={openCreate}>+ Tambah Anggota</Button>
         </div>
-        <Button onClick={openCreate}>+ Tambah Anggota</Button>
-      </div>
+      </Reveal>
 
       {message?.error && <Alert kind="error">{message.error}</Alert>}
       {message?.success && <Alert kind="success">{message.success}</Alert>}

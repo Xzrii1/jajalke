@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import {
   Area,
   AreaChart,
@@ -11,6 +12,7 @@ import {
   YAxis,
 } from "recharts";
 import { getAdminChartData, type AdminChartData } from "@/app/actions/transaksi";
+import { Counter } from "@/components/motion";
 
 const BULAN = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
 
@@ -110,13 +112,18 @@ export function AdminChart() {
               key={opt.days}
               type="button"
               onClick={() => setDays(opt.days)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                days === opt.days
-                  ? "bg-white text-indigo-700 shadow-sm"
-                  : "text-slate-500 hover:bg-white/60 hover:text-slate-700"
+              className={`relative rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200 ${
+                days === opt.days ? "text-indigo-700" : "text-slate-500 hover:bg-white/60 hover:text-slate-700"
               }`}
             >
-              {opt.label}
+              {days === opt.days && (
+                <motion.span
+                  layoutId="chart-range"
+                  className="absolute inset-0 rounded-full bg-white shadow-sm ring-1 ring-inset ring-slate-900/5"
+                  transition={{ type: "spring", bounce: 0.25, duration: 0.45 }}
+                />
+              )}
+              <span className="relative">{opt.label}</span>
             </button>
           ))}
         </div>
@@ -289,7 +296,7 @@ function StatTile({
           {label}
         </p>
         <p className={`text-xl font-semibold tabular-nums tracking-tight ${palettes.text}`}>
-          {value}
+          <Counter value={value} />
         </p>
       </div>
     </div>

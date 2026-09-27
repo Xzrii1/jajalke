@@ -14,6 +14,7 @@ import {
   Spinner,
 } from "@/components/ui";
 import { QrisModal } from "@/components/qris-modal";
+import { Reveal } from "@/components/motion";
 import { formatRupiah, formatTanggal, dendaSisa } from "@/lib/utils";
 
 export default function SiswaProfil() {
@@ -60,10 +61,12 @@ export default function SiswaProfil() {
     .toUpperCase();
 
   return (
-    <div className="anim-rise space-y-6">
-      <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
-        Profil Saya
-      </h1>
+    <div className="space-y-6">
+      <Reveal>
+        <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
+          Profil Saya
+        </h1>
+      </Reveal>
 
       {error && <Alert kind="info">{error}</Alert>}
 

@@ -10,6 +10,7 @@ import {
 } from "@/app/actions/buku";
 import { getRatingInfo } from "@/app/actions/ulasan";
 import { BookRating } from "@/components/book-rating";
+import { Reveal } from "@/components/motion";
 import { KONDISI_LABELS, KONDISI_OPTIONS, KONDISI_TONES } from "@/lib/kondisi";
 import type { ActionResult, Buku, BukuRating, KondisiBuku } from "@/lib/types";
 import {
@@ -170,16 +171,18 @@ export default function AdminBuku() {
   const totalStok = buku.reduce((sum, b) => sum + b.stok, 0);
 
   return (
-    <div className="anim-rise space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Kelola Data Buku</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            {totalJudul} judul · {totalStok} eksemplar tersedia
-          </p>
+    <div className="space-y-5">
+      <Reveal>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Kelola Data Buku</h1>
+            <p className="mt-1 text-sm text-slate-500">
+              {totalJudul} judul · {totalStok} eksemplar tersedia
+            </p>
+          </div>
+          <Button onClick={openCreate}>+ Tambah Buku</Button>
         </div>
-        <Button onClick={openCreate}>+ Tambah Buku</Button>
-      </div>
+      </Reveal>
 
       {message?.error && <Alert kind="error">{message.error}</Alert>}
       {message?.success && <Alert kind="success">{message.success}</Alert>}

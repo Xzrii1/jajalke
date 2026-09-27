@@ -6,6 +6,7 @@ import { pinjamBuku } from "@/app/actions/transaksi";
 import { getRatingInfo } from "@/app/actions/ulasan";
 import { BookRating } from "@/components/book-rating";
 import { KONDISI_LABELS, KONDISI_TONES } from "@/lib/kondisi";
+import { Reveal, Stagger, StaggerItem } from "@/components/motion";
 import type { ActionResult, Buku, BukuRating } from "@/lib/types";
 import {
   Alert,
@@ -92,51 +93,55 @@ export default function SiswaBuku() {
   }
 
   return (
-    <div className="anim-rise space-y-5">
-      <div>
-        <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Cari &amp; Pinjam Buku</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Temukan buku perpustakaan berdasarkan judul, penulis, kategori, atau ISBN.
-        </p>
-      </div>
+    <div className="space-y-5">
+      <Reveal>
+        <div>
+          <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">Cari &amp; Pinjam Buku</h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Temukan buku perpustakaan berdasarkan judul, penulis, kategori, atau ISBN.
+          </p>
+        </div>
+      </Reveal>
 
       {message?.error && <Alert kind="error">{message.error}</Alert>}
       {message?.success && <Alert kind="success">{message.success}</Alert>}
       {error && <Alert kind="info">{error}</Alert>}
 
-      <Card className="p-4">
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <div className="flex-1">
-            <Input
-              placeholder="Cari judul, penulis, kategori, atau ISBN..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="sm:w-56">
-            <Select
-              value={kategoriFilter}
-              onChange={(e) => setKategoriFilter(e.target.value)}
+      <Reveal delay={0.05}>
+        <Card className="p-4">
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <div className="flex-1">
+              <Input
+                placeholder="Cari judul, penulis, kategori, atau ISBN..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
+            <div className="sm:w-56">
+              <Select
+                value={kategoriFilter}
+                onChange={(e) => setKategoriFilter(e.target.value)}
+              >
+                <option value="">Semua Kategori</option>
+                {kategoriOptions.map((k) => (
+                  <option key={k} value={k}>
+                    {k}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setSearch("");
+                setKategoriFilter("");
+              }}
             >
-              <option value="">Semua Kategori</option>
-              {kategoriOptions.map((k) => (
-                <option key={k} value={k}>
-                  {k}
-                </option>
-              ))}
-            </Select>
+              Reset
+            </Button>
           </div>
-          <Button
-            variant="secondary"
-            onClick={() => {
-              setSearch("");
-              setKategoriFilter("");
-            }}
-          >
-            Reset
-          </Button>
-        </div>
-      </Card>
+        </Card>
+      </Reveal>
 
       {loading ? (
         <Spinner label="Memuat daftar buku..." />
@@ -148,14 +153,11 @@ export default function SiswaBuku() {
           />
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {buku.map((b, i) => (
-            <Card
-              key={b.id}
-              className="anim-rise card-lift flex flex-col"
-              style={{ animationDelay: `${Math.min(i, 8) * 45}ms` }}
-            >
-              <div className="flex gap-4">
+        <Stagger className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {buku.map((b) => (
+            <StaggerItem key={b.id}>
+              <Card className="card-lift flex h-full flex-col">
+                <div className="flex gap-4">
                 <div className="shrink-0">
                   {b.cover_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -233,8 +235,9 @@ export default function SiswaBuku() {
                 </div>
               </div>
             </Card>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       )}
     </div>
   );

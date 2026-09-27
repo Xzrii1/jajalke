@@ -102,25 +102,33 @@ export function JamOperasionalCard({ editable = false }: { editable?: boolean })
           </p>
         ) : (
           <div className="mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2">
-            {rows.map((r) => (
-              <div
-                key={r.hari}
-                className={`flex items-center justify-between gap-3 rounded-lg px-2.5 py-1.5 text-sm ${
-                  r.hari === today ? "bg-indigo-50 text-indigo-800" : "text-slate-600"
-                }`}
-              >
-                <span className="font-medium">
-                  {DAFTAR_HARI.find((d) => d.key === r.hari)?.label}
-                </span>
-                {r.libur ? (
-                  <Badge tone="ditolak">Libur</Badge>
-                ) : (
-                  <span className="font-semibold tabular-nums">
-                    {formatJam(r.buka)} – {formatJam(r.tutup)} WIB
+            {rows.map((r) => {
+              const isToday = r.hari === today;
+              return (
+                <div
+                  key={r.hari}
+                  className={`flex items-center justify-between gap-3 rounded-xl px-2.5 py-1.5 text-sm ${
+                    isToday
+                      ? "bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-800 ring-1 ring-inset ring-indigo-600/15"
+                      : "text-slate-600"
+                  }`}
+                >
+                  <span className="flex items-center gap-2 font-medium">
+                    {DAFTAR_HARI.find((d) => d.key === r.hari)?.label}
+                    {isToday && !r.libur && (
+                      <Badge tone="aktif" className="px-1.5 py-0">Hari ini</Badge>
+                    )}
                   </span>
-                )}
-              </div>
-            ))}
+                  {r.libur ? (
+                    <Badge tone="ditolak">Libur</Badge>
+                  ) : (
+                    <span className="font-semibold tabular-nums">
+                      {formatJam(r.buka)} – {formatJam(r.tutup)} WIB
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
         {message?.error && (
