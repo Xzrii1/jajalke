@@ -29,32 +29,38 @@ export function setThemePref(mode: "dark" | "light") {
   }
 }
 
+/* Awan = dekorasi langit track yang diam (tidak ikut berputar/geser bersama bulan) */
 const CLOUDS = [
-  { left: 30, top: 15, width: 40, dark: true },
-  { left: 44, top: 10, width: 20, dark: true },
-  { left: 18, top: 24, width: 30, dark: true },
-  { left: 36, top: 18, width: 40, dark: false },
-  { left: 48, top: 14, width: 20, dark: false },
-  { left: 22, top: 26, width: 30, dark: false },
+  { left: 14, top: 2, width: 16, dark: true },
+  { left: 40, top: 22, width: 22, dark: true },
+  { left: 4, top: 28, width: 14, dark: true },
+  { left: 50, top: 4, width: 18, dark: false },
+  { left: 28, top: 12, width: 20, dark: false },
+  { left: 2, top: 10, width: 14, dark: false },
 ];
 
+/* Titik-titik bulan di dalam knob */
 const MOON_DOTS = [
   { left: 10, top: 3, size: 6 },
   { left: 2, top: 10, size: 10 },
   { left: 16, top: 18, size: 3 },
 ];
 
+/* Sinar matahari, menyembul di tepi knob */
 const RAYS = [
   { left: -8, top: -8, width: 43 },
   { left: -13, top: -13, width: 55 },
   { left: -18, top: -18, width: 60 },
 ];
 
+/* Bintang tersebar di seluruh langit malam (tidak nempel bulan) */
 const STARS = [
-  { left: 3, top: 2, width: 20, delay: 0.3 },
+  { left: 6, top: 3, width: 14, delay: 0.3 },
   { left: 3, top: 16, width: 6, delay: 0 },
-  { left: 10, top: 20, width: 12, delay: 0.6 },
-  { left: 18, top: 0, width: 18, delay: 1.3 },
+  { left: 16, top: 18, width: 10, delay: 0.6 },
+  { left: 26, top: 5, width: 8, delay: 1.3 },
+  { left: 38, top: 13, width: 12, delay: 0.9 },
+  { left: 51, top: 7, width: 6, delay: 0.4 },
 ];
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
@@ -84,51 +90,48 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         title={isDark ? "Mode terang" : "Mode gelap"}
       />
       <span className="theme-switch__slider">
-        {/* Knob matahari/bulan berisi titik bulan, sinar, dan awan */}
+        {/* Knob matahari/bulan: tenggelam di langit track (dots + sinar) */}
         <span className="theme-switch__knob">
-          <span className="theme-switch__knob-inner">
-            {/* Titik-titik bulan */}
-            {MOON_DOTS.map((d, i) => (
-              <svg
-                key={i}
-                className="theme-switch__moon-dot"
-                style={{ left: d.left, top: d.top, width: d.size, height: d.size }}
-                viewBox="0 0 100 100"
-                aria-hidden
-              >
-                <circle cx="50" cy="50" r="50" />
-              </svg>
-            ))}
-
-            {/* Sinar matahari (menyembul di sekeliling knob) */}
-            {RAYS.map((r, i) => (
-              <svg
-                key={i}
-                className="theme-switch__ray"
-                style={{ left: r.left, top: r.top, width: r.width, height: r.width }}
-                viewBox="0 0 100 100"
-                aria-hidden
-              >
-                <circle cx="50" cy="50" r="50" />
-              </svg>
-            ))}
-
-            {/* Awan mengambang (ikut berputar bersama matahari/bulan) */}
-            {CLOUDS.map((c, i) => (
-              <svg
-                key={i}
-                className={`theme-switch__cloud ${c.dark ? "theme-switch__cloud--dark" : ""}`}
-                style={{ left: c.left, top: c.top, width: c.width, height: c.width }}
-                viewBox="0 0 100 100"
-                aria-hidden
-              >
-                <circle cx="50" cy="50" r="50" />
-              </svg>
-            ))}
-          </span>
+          {MOON_DOTS.map((d, i) => (
+            <svg
+              key={i}
+              className="theme-switch__moon-dot"
+              style={{ left: d.left, top: d.top, width: d.size, height: d.size }}
+              viewBox="0 0 100 100"
+              aria-hidden
+            >
+              <circle cx="50" cy="50" r="50" />
+            </svg>
+          ))}
+          {RAYS.map((r, i) => (
+            <svg
+              key={i}
+              className="theme-switch__ray"
+              style={{ left: r.left, top: r.top, width: r.width, height: r.width }}
+              viewBox="0 0 100 100"
+              aria-hidden
+            >
+              <circle cx="50" cy="50" r="50" />
+            </svg>
+          ))}
         </span>
 
-        {/* Bintang: saudara kandung dari knob, di atas track */}
+        {/* Awan langit: diam, hanya bergoyang pelan */}
+        <span className="theme-switch__clouds">
+          {CLOUDS.map((c, i) => (
+            <svg
+              key={i}
+              className={`theme-switch__cloud ${c.dark ? "theme-switch__cloud--dark" : ""}`}
+              style={{ left: c.left, top: c.top, width: c.width, height: c.width }}
+              viewBox="0 0 100 100"
+              aria-hidden
+            >
+              <circle cx="50" cy="50" r="50" />
+            </svg>
+          ))}
+        </span>
+
+        {/* Bintang langit malam: muncul saat gelap, tersebar di seluruh track */}
         <span className="theme-switch__stars">
           {STARS.map((s, i) => (
             <svg
