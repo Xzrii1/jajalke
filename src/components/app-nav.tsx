@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { logout } from "@/app/actions/auth";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export interface NavLink {
   href: string;
@@ -134,6 +135,12 @@ export function AppNav({
           </p>
         </div>
       </div>
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <span className="text-[11px] font-medium uppercase tracking-wider text-indigo-200/70">
+          Tema
+        </span>
+        <ThemeToggle variant="dark" className="h-8 w-8" />
+      </div>
       {!guest && (
         <form action={logout} className="mt-3">
           <button
@@ -209,8 +216,11 @@ export function AppNav({
             {brand}
           </span>
         </Link>
-        <span className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-xs font-bold text-white">
-          {userLabel.slice(0, 1).toUpperCase()}
+        <span className="ml-auto flex items-center gap-2">
+          <ThemeToggle variant="light" />
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-xs font-bold text-white">
+            {userLabel.slice(0, 1).toUpperCase()}
+          </span>
         </span>
       </header>
 

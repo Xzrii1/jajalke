@@ -59,7 +59,7 @@ export function QrisModal({
           </div>
 
           <div className="flex flex-col items-center rounded-xl border-2 border-dashed border-slate-300 p-5">
-            <svg className="h-36 w-36 rounded-lg bg-white" viewBox="0 0 120 120" shapeRendering="crispEdges">
+            <svg className="qris-bg h-36 w-36 rounded-lg bg-white" viewBox="0 0 120 120" shapeRendering="crispEdges">
               <rect width="120" height="120" fill="#fff" />
               <g fill="#111827">
                 <rect x="10" y="10" width="8" height="8" />

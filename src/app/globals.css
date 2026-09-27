@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme inline {
   --font-sans: var(--font-inter);
   --font-display: var(--font-space-grotesk);
@@ -8,6 +10,22 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+  /* Palette slate versi gelap — seluruh utility slate otomatis ikut berubah.
+     Dipetakan agar heading/mata teks jadi terang di atas latar gelap. */
+  --color-slate-50: #0d1526;
+  --color-slate-100: #131d31;
+  --color-slate-200: #1c2940;
+  --color-slate-300: #2a3a55;
+  --color-slate-400: #55698c;
+  --color-slate-500: #7c8db0;
+  --color-slate-600: #9aaac9;
+  --color-slate-700: #c3cfe4;
+  --color-slate-800: #dde6f5;
+  --color-slate-900: #eef3fb;
 }
 
 body {
@@ -20,6 +38,39 @@ body {
   background-attachment: fixed;
   color: var(--color-slate-800);
   text-rendering: optimizeLegibility;
+}
+
+/* Permukaan putih (kartu, input, modal) jadi gelap saat mode gelap */
+.dark [class*="bg-white"] {
+  background-color: #131d31;
+}
+
+/* Pengecualian: kode QR harus tetap berlatar putih agar bisa dipindai */
+.dark .qris-bg {
+  background-color: #ffffff !important;
+}
+
+/* slate-800/900 juga dipakai sebagai latar gelap (scrim modal, tombol gelap)
+   → tetap gelap meski token teksturnya sudah di-remap */
+.dark [class*="bg-slate-800"] {
+  background-color: #1e293b;
+}
+.dark [class*="bg-slate-900"] {
+  background-color: #0f172a;
+}
+
+/* Transisi tema super-smooth: semua warna saling memudar sesaat setelah toggle */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.5s ease,
+    fill 0.5s ease,
+    stroke 0.5s ease,
+    box-shadow 0.7s cubic-bezier(0.22, 1, 0.36, 1) !important;
 }
 
 ::selection {
@@ -179,6 +230,13 @@ body {
     0 24px 60px -18px rgba(2, 6, 23, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
+.dark .glass-panel {
+  background: rgba(13, 21, 38, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 24px 60px -18px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
 
 @media (max-width: 640px) {
   /* Layar kecil: kurangi radius blur padahal background sudah samar */
@@ -193,6 +251,10 @@ body {
   -webkit-backdrop-filter: blur(12px) saturate(1.3);
   backdrop-filter: blur(12px) saturate(1.3);
   border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.dark .glass-chip {
+  background: rgba(13, 21, 38, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 @media (max-width: 640px) {
@@ -228,6 +290,10 @@ body {
   -webkit-backdrop-filter: blur(16px) saturate(1.5);
   backdrop-filter: blur(16px) saturate(1.5);
   border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+}
+.dark .glass-nav {
+  background: rgba(13, 21, 38, 0.75);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.6);
 }
 
 @media (max-width: 640px) {
@@ -266,6 +332,9 @@ body {
   overflow: hidden;
   border-radius: 0.6rem;
   background: rgba(226, 232, 240, 0.65);
+}
+.dark .skeleton {
+  background: rgba(42, 58, 85, 0.45);
 }
 .skeleton::after {
   content: "";
@@ -340,6 +409,15 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.65);
   background-clip: padding-box;
+}
+
+/* Grafik (recharts): garis grid & tooltip ikut gelap */
+.dark .recharts-cartesian-grid line {
+  stroke: #23314b;
+}
+.dark .recharts-default-tooltip {
+  background-color: #131d31 !important;
+  border-color: #2a3a55 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
