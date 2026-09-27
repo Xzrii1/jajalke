@@ -157,7 +157,7 @@ export function AdminChart() {
         {error && <p className="text-center text-sm text-slate-500">{error}</p>}
         {loading && (
           <div className="flex h-full items-center justify-center">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-slate-300 border-t-indigo-600" />
+            <span className="loader text-indigo-600" />
           </div>
         )}
         {!loading && !error && rows.length > 0 && totalPinjam + totalKembali > 0 && (
