@@ -346,6 +346,143 @@ html.theme-transition *::after {
 }
 
 /* ---------------------------------------------------------------
+   Toggle tema sun/moon — adaptasi dari Uiverse.io (RiccardoRapelli)
+---------------------------------------------------------------- */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  flex-shrink: 0;
+}
+.theme-switch__input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.theme-switch__slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  border-radius: 34px;
+  background-color: #2196f3;
+  transition: all 0.4s ease;
+  z-index: 0;
+  overflow: hidden;
+}
+.theme-switch__input:checked + .theme-switch__slider {
+  background-color: #0b1020;
+}
+.theme-switch__input:focus-visible + .theme-switch__slider {
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.6);
+}
+
+.theme-switch__knob {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #ffd400;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 2;
+}
+.theme-switch__input:checked + .theme-switch__slider .theme-switch__knob {
+  background-color: #ffffff;
+  transform: translateX(26px);
+}
+.theme-switch__knob-inner {
+  position: absolute;
+  inset: 0;
+}
+.theme-switch__input:checked + .theme-switch__slider .theme-switch__knob-inner {
+  animation: theme-rotate 0.6s ease-in-out both;
+}
+@keyframes theme-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Sinar matahari (mengikuti knob, menyembul di tepinya) */
+.theme-switch__ray {
+  position: absolute;
+  fill: #ffffff;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* Titik-titik bulan (muncul saat gelap) */
+.theme-switch__moon-dot {
+  position: absolute;
+  fill: #9ca3af;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.theme-switch__input:checked + .theme-switch__slider .theme-switch__moon-dot {
+  opacity: 1;
+}
+
+/* Bintang (turun & berkelip saat gelap) */
+.theme-switch__stars {
+  position: absolute;
+  inset: 0;
+  transform: translateY(-32px);
+  opacity: 0;
+  transition: all 0.4s;
+  pointer-events: none;
+}
+.theme-switch__input:checked + .theme-switch__slider .theme-switch__stars {
+  transform: translateY(0);
+  opacity: 1;
+}
+.theme-switch__star {
+  position: absolute;
+  fill: #ffffff;
+  animation: theme-twinkle 2s ease-in-out infinite;
+}
+@keyframes theme-twinkle {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.25); }
+  80% { transform: scale(0.8); }
+  100% { transform: scale(1); }
+}
+
+/* Awan mengambang di langit track */
+.theme-switch__cloud {
+  position: absolute;
+  fill: #eef4ff;
+  animation: theme-cloud 6s ease-in-out infinite;
+  pointer-events: none;
+}
+.theme-switch__cloud--dark {
+  fill: #c7d3e6;
+  animation-delay: 1s;
+}
+@keyframes theme-cloud {
+  0% { transform: translateX(0); }
+  40% { transform: translateX(4px); }
+  80% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+/* Transisi kebagian global tidak boleh mematikan animasi slider-nya */
+html.theme-transition .theme-switch__slider,
+html.theme-transition .theme-switch__knob,
+html.theme-transition .theme-switch__stars {
+  transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-switch__knob-inner,
+  .theme-switch__star,
+  .theme-switch__cloud {
+    animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------
    Loader naik bergelombang (warna ikut currentColor)
 ---------------------------------------------------------------- */
 .loader {

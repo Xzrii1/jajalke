@@ -139,7 +139,7 @@ export function AppNav({
         <span className="text-[11px] font-medium uppercase tracking-wider text-indigo-200/70">
           Tema
         </span>
-        <ThemeToggle variant="dark" className="h-8 w-8" />
+        <ThemeToggle />
       </div>
       {!guest && (
         <form action={logout} className="mt-3">
@@ -212,12 +212,12 @@ export function AppNav({
         <Link href={links[0]?.href ?? "/"} className="flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icon.png" alt="Logo" className="h-8 w-8 rounded-lg object-cover shadow-sm" />
-          <span className="font-display text-base font-semibold tracking-tight text-slate-900">
+          <span className="hidden font-display text-base font-semibold tracking-tight text-slate-900 min-[400px]:block">
             {brand}
           </span>
         </Link>
         <span className="ml-auto flex items-center gap-2">
-          <ThemeToggle variant="light" />
+          <ThemeToggle />
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 text-xs font-bold text-white">
             {userLabel.slice(0, 1).toUpperCase()}
           </span>

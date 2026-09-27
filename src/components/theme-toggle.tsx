@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
 
 export const THEME_STORAGE_KEY = "theme";
 export const THEME_EVENT = "jajal-theme";
@@ -30,30 +29,35 @@ export function setThemePref(mode: "dark" | "light") {
   }
 }
 
-function SunIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-      <circle cx="12" cy="12" r="4" />
-      <path strokeLinecap="round" d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
-    </svg>
-  );
-}
+const CLOUDS = [
+  { left: 34, top: 19, width: 40, dark: false },
+  { left: 48, top: 14, width: 20, dark: true },
+  { left: 22, top: 28, width: 30, dark: false },
+  { left: 40, top: 22, width: 40, dark: true },
+  { left: 52, top: 18, width: 20, dark: true },
+  { left: 26, top: 30, width: 30, dark: false },
+];
 
-function MoonIcon({ className = "" }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
-    </svg>
-  );
-}
+const STARS = [
+  { left: 3, top: 2, width: 18, delay: 0.3 },
+  { left: 4, top: 16, width: 5, delay: 0 },
+  { left: 10, top: 21, width: 11, delay: 0.6 },
+  { left: 17, top: 1, width: 16, delay: 1.3 },
+];
 
-export function ThemeToggle({
-  variant = "dark",
-  className = "",
-}: {
-  variant?: "dark" | "light";
-  className?: string;
-}) {
+const MOON_DOTS = [
+  { left: 10, top: 3, size: 6 },
+  { left: 2, top: 10, size: 10 },
+  { left: 16, top: 18, size: 3 },
+];
+
+const RAYS = [
+  { left: -9, top: -9, width: 44, ratio: 1 },
+  { left: -13, top: -13, width: 55, ratio: 1 },
+  { left: -18, top: -18, width: 62, ratio: 1 },
+];
+
+export function ThemeToggle({ className = "" }: { className?: string }) {
   const [mode, setMode] = useState<"dark" | "light">(getInitial);
 
   useEffect(() => {
@@ -70,48 +74,75 @@ export function ThemeToggle({
   const toggle = () => setThemePref(isDark ? "light" : "dark");
 
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={isDark}
-      onClick={toggle}
-      aria-label={isDark ? "Aktifkan mode terang" : "Aktifkan mode gelap"}
-      title={isDark ? "Mode terang" : "Mode gelap"}
-      className={`relative h-8 w-[60px] shrink-0 rounded-full border transition-colors duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/50 ${
-        isDark
-          ? "border-white/15 bg-gradient-to-r from-slate-800 to-indigo-950"
-          : "border-slate-200 bg-gradient-to-r from-amber-100 to-orange-200/70"
-      } ${variant === "light" && !isDark ? "border-slate-300" : ""} ${className}`}
-    >
-      <SunIcon
-        className={`pointer-events-none absolute left-[7px] top-1/2 h-4 w-4 -translate-y-1/2 transition-colors duration-300 ${
-          isDark ? "text-amber-300" : "text-amber-500"
-        }`}
+    <label className={`theme-switch ${className}`}>
+      <input
+        type="checkbox"
+        className="theme-switch__input"
+        checked={isDark}
+        onChange={toggle}
+        aria-label={isDark ? "Aktifkan mode terang" : "Aktifkan mode gelap"}
+        title={isDark ? "Mode terang" : "Mode gelap"}
       />
-      <MoonIcon
-        className={`pointer-events-none absolute right-[7px] top-1/2 h-4 w-4 -translate-y-1/2 transition-colors duration-300 ${
-          isDark ? "text-indigo-200" : "text-slate-400"
-        }`}
-      />
+      <span className="theme-switch__slider">
+        {/* Awan mengambang di langit track */}
+        {CLOUDS.map((c, i) => (
+          <svg
+            key={i}
+            className={`theme-switch__cloud ${c.dark ? "theme-switch__cloud--dark" : ""}`}
+            style={{ left: c.left, top: c.top, width: c.width }}
+            viewBox="0 0 40 26"
+            aria-hidden
+          >
+            <path d="M7 17a4.5 4.5 0 0 1-.3-8.9A6 6 0 0 1 17.5 5.4a5.2 5.2 0 0 1 2.6 9A4.2 4.2 0 0 1 18.5 17z" />
+          </svg>
+        ))}
 
-      {/* Thumb geser */}
-      <span className="absolute inset-y-[4px] left-[4px] w-6">
-        <motion.span
-          animate={{ x: isDark ? 28 : 0 }}
-          transition={{ type: "spring", stiffness: 550, damping: 34 }}
-          className={`flex h-full w-full items-center justify-center rounded-full shadow-md ${
-            isDark
-              ? "bg-slate-900 ring-1 ring-white/25"
-              : "bg-white ring-1 ring-slate-200/60"
-          }`}
-        >
-          {isDark ? (
-            <MoonIcon className="h-3.5 w-3.5 text-indigo-200" />
-          ) : (
-            <SunIcon className="h-3.5 w-3.5 text-amber-500" />
-          )}
-        </motion.span>
+        {/* Knob matahari/bulan */}
+        <span className="theme-switch__knob">
+          <span className="theme-switch__knob-inner">
+            {/* Titik-titik bulan */}
+            {MOON_DOTS.map((d, i) => (
+              <svg
+                key={i}
+                className="theme-switch__moon-dot"
+                style={{ left: d.left, top: d.top, width: d.size, height: d.size }}
+                viewBox="0 0 10 10"
+                aria-hidden
+              >
+                <circle cx="5" cy="5" r="5" />
+              </svg>
+            ))}
+
+            {/* Bintang */}
+            <span className="theme-switch__stars">
+              {STARS.map((s, i) => (
+                <svg
+                  key={i}
+                  className="theme-switch__star"
+                  style={{ left: s.left, top: s.top, width: s.width, animationDelay: `${s.delay}s` }}
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" />
+                </svg>
+              ))}
+            </span>
+          </span>
+
+          {/* Sinar matahari (menyembul di sekeliling knob) */}
+          {RAYS.map((r, i) => (
+            <svg
+              key={i}
+              className="theme-switch__ray"
+              style={{ left: r.left, top: r.top, width: r.width, height: r.width }}
+              viewBox="0 0 24 24"
+              aria-hidden
+            >
+              <circle cx="12" cy="12" r="12" />
+            </svg>
+          ))}
+        </span>
       </span>
-    </button>
+    </label>
   );
 }
