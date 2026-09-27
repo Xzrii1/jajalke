@@ -14,16 +14,34 @@ export function setThemePref(mode: "dark" | "light") {
   const root = document.documentElement;
   const prev = root.classList.contains("dark");
   const next = mode === "dark";
-  root.classList.toggle("dark", next);
-  root.style.colorScheme = next ? "dark" : "light";
-  try {
-    localStorage.setItem(THEME_STORAGE_KEY, next ? "dark" : "light");
-  } catch {
-    /* storage tidak tersedia */
+
+  const apply = () => {
+    root.classList.toggle("dark", next);
+    root.style.colorScheme = next ? "dark" : "light";
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, next ? "dark" : "light");
+    } catch {
+      /* storage tidak tersedia */
+    }
+  };
+
+  const publish = () => window.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { mode } }));
+
+  if (typeof document.startViewTransition === "function") {
+    // View Transitions API: crossfade snapshot utuh (komposisi satu layer),
+    // jauh lebih ringan daripada menfade ratusan elemen lewat CSS.
+    document.startViewTransition(() => {
+      apply();
+      publish();
+    });
+  } else {
+    // Fallback: bahasa CSS transisi seperti sebelumnya.
+    apply();
+    root.classList.add("theme-transition");
+    window.setTimeout(() => root.classList.remove("theme-transition"), 900);
+    publish();
   }
-  root.classList.add("theme-transition");
-  window.setTimeout(() => root.classList.remove("theme-transition"), 900);
-  window.dispatchEvent(new CustomEvent(THEME_EVENT, { detail: { mode } }));
+
   if (prev !== next) {
     console.debug("[theme]", next ? "gelap" : "terang");
   }
