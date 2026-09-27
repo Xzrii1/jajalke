@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { getAdminStats, type AdminStats } from "@/app/actions/transaksi";
 import { getPengaturan, updateDendaPerHari, type Pengaturan } from "@/app/actions/pengaturan";
 import { Alert, Button, Card, Field, Input, Spinner } from "@/components/ui";
@@ -151,19 +152,28 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-6">
-      <Reveal>
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <motion.section
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 p-6 text-white shadow-xl shadow-indigo-600/25 sm:p-8"
+      >
+        <div aria-hidden className="pointer-events-none absolute inset-0 opacity-30" style={{ backgroundImage: "radial-gradient(circle at 85% 20%, rgba(255,255,255,0.35), transparent 45%), radial-gradient(circle at 10% 120%, rgba(217,70,239,0.5), transparent 50%)" }} />
+        <div className="relative flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="font-display text-2xl font-medium tracking-tight text-slate-900 sm:text-3xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-100/90">
               Dashboard Admin
+            </p>
+            <h1 className="mt-1.5 font-display text-3xl font-medium tracking-tight sm:text-4xl">
+              Ringkasan Perpustakaan
             </h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Ringkasan kondisi perpustakaan sekolah.
+            <p className="mt-2 max-w-md text-sm leading-relaxed text-indigo-100/85">
+              Pantau koleksi, anggota, dan seluruh aktivitas peminjaman dalam satu layar.
             </p>
           </div>
-          <LiveClock />
+          <LiveClock dark />
         </div>
-      </Reveal>
+      </motion.section>
 
       {error && <Alert kind="info">{error}</Alert>}
 
