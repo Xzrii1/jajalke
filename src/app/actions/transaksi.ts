@@ -312,11 +312,23 @@ export async function kembalikanBuku(transaksiId: string): Promise<ActionResult>
 
   const { error: upErr } = await sb
     .from("transaksi")
-    .update({ status: "menunggu_kembali" })
+    .update({ status: "menunggu_kembali", denda: await hitungDendaTerlambat(trx.tanggal_jatuh_tempo) })
     .eq("id", transaksiId);
   if (upErr) return { error: "Gagal mengajukan pengembalian: " + upErr.message };
 
   return { success: "Pengembalian diajukan. Menunggu persetujuan petugas/admin." };
+}
+
+/**
+ * Denda yang dibekukan saat pengajuan pengembalian: dari hari setelah jatuh
+ * tempo sampai HARI PENGAJUAN (bukan hari persetujuan petugas). Selama status
+ * masih 'menunggu_kembali', denda tidak boleh terus bertambah.
+ */
+async function hitungDendaTerlambat(jatuhTempo: string): Promise<number> {
+  const hariTelat = diffDays(todayISO(), jatuhTempo);
+  if (hariTelat <= 0) return 0;
+  const dendaPerHari = await getDendaPerHari();
+  return hariTelat * dendaPerHari;
 }
 
 export async function setujuiPengembalian(transaksiId: string): Promise<ActionResult> {
@@ -335,10 +347,12 @@ export async function setujuiPengembalian(transaksiId: string): Promise<ActionRe
   }
 
   const tanggalKembali = todayISO();
-  const hariTelat = diffDays(tanggalKembali, trx.tanggal_jatuh_tempo);
-  const terlambat = hariTelat > 0;
+  // Denda memakai nilai yang dibekukan saat siswa mengajukan pengembalian,
+  // bukan dihitung ulang dari tanggal persetujuan (agar tidak bertambah saat menunggu).
+  const denda = trx.denda ?? 0;
+  const terlambat = denda > 0;
   const dendaPerHari = await getDendaPerHari();
-  const denda = terlambat ? hariTelat * dendaPerHari : 0;
+  const hariTelat = dendaPerHari > 0 ? Math.round(denda / dendaPerHari) : 0;
   const status = terlambat ? "terlambat" : "dikembalikan";
 
   const { error: upErr } = await sb
@@ -377,7 +391,7 @@ export async function tolakPengembalian(transaksiId: string): Promise<ActionResu
 
   const { error: upErr } = await sb
     .from("transaksi")
-    .update({ status: "dipinjam" })
+    .update({ status: "dipinjam", denda: 0 })
     .eq("id", transaksiId);
   if (upErr) return { error: "Gagal menolak pengembalian: " + upErr.message };
 

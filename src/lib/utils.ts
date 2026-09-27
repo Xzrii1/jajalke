@@ -62,9 +62,11 @@ export function resolveDenda(
 ): number {
   if (t.tanggal_kembali) return t.denda ?? 0;
   if (t.status === "pending" || t.status === "ditolak") return 0;
-  // menunggu_kembali masih dihitung dendanya karena buku belum benar-benar kembali
+  // menunggu_kembali: denda sudah dibekukan saat siswa mengajukan pengembalian,
+  // tidak boleh terus bertambah selama menunggu persetujuan petugas.
+  if (t.status === "menunggu_kembali") return t.denda ?? 0;
   const status = resolveStatus(t);
-  if (status === "terlambat" || status === "menunggu_kembali") {
+  if (status === "terlambat") {
     return diffDays(todayISO(), t.tanggal_jatuh_tempo) * dendaPerHari;
   }
   return 0;
