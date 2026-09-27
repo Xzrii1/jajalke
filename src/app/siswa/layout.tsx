@@ -11,7 +11,7 @@ export default async function SiswaLayout({
   const user = await requireSiswa();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen overflow-x-clip">
       <AppNav
         brand="Perpus Sekolah"
         userLabel={user.nama_lengkap}

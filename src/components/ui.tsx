@@ -248,7 +248,7 @@ export function Modal({
             exit={{ opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
-            className={`max-h-[92vh] w-full overflow-y-auto rounded-t-3xl bg-white p-6 shadow-2xl sm:rounded-3xl ${
+            className={`max-h-[92vh] w-full overscroll-contain overflow-y-auto rounded-t-3xl bg-white px-6 pt-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] shadow-2xl sm:rounded-3xl sm:p-6 ${
               wide ? "sm:max-w-2xl" : "sm:max-w-md"
             }`}
           >

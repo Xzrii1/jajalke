@@ -24,6 +24,15 @@ function formatTanggal(d: Date): string {
   }).format(d);
 }
 
+function formatTanggalShort(d: Date): string {
+  return new Intl.DateTimeFormat("id-ID", {
+    timeZone: TIMEZONE,
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  }).format(d);
+}
+
 export function LiveClock({ dark = false }: { dark?: boolean }) {
   const [now, setNow] = useState<Date>(() => new Date());
 
@@ -34,22 +43,23 @@ export function LiveClock({ dark = false }: { dark?: boolean }) {
 
   return (
     <div
-      className={`inline-flex shrink-0 items-center gap-3 rounded-2xl px-4 py-2.5 shadow-lg backdrop-blur-sm ${
+      className={`inline-flex max-w-full items-center gap-3 rounded-2xl px-4 py-2.5 shadow-lg backdrop-blur-sm ${
         dark
           ? "border border-white/20 bg-white/12 text-white"
           : "border border-slate-200/80 bg-white/90 text-slate-900 shadow-[0_1px_3px_rgba(15,23,42,0.06)]"
       }`}
     >
-      <span className="relative flex h-2.5 w-2.5" aria-hidden>
+      <span className="relative flex h-2.5 w-2.5 shrink-0" aria-hidden>
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75 motion-reduce:hidden" />
         <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-indigo-500" />
       </span>
-      <div className="leading-tight">
+      <div className="min-w-0 leading-tight">
         <p className={`font-display text-lg font-semibold tabular-nums tracking-tight ${dark ? "text-white" : "text-slate-900"}`}>
           {formatWaktu(now)}
         </p>
         <p className={`text-[11px] font-medium uppercase tracking-wider ${dark ? "text-indigo-100/70" : "text-slate-400"}`}>
-          {formatTanggal(now)}
+          <span className="hidden min-[390px]:inline">{formatTanggal(now)}</span>
+          <span className="inline min-[390px]:hidden">{formatTanggalShort(now)}</span>
         </p>
       </div>
     </div>

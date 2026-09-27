@@ -107,13 +107,13 @@ export function JamOperasionalCard({ editable = false }: { editable?: boolean })
               return (
                 <div
                   key={r.hari}
-                  className={`flex items-center justify-between gap-3 rounded-xl px-2.5 py-1.5 text-sm ${
+                  className={`flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-xl px-2.5 py-1.5 text-sm ${
                     isToday
                       ? "bg-gradient-to-r from-indigo-50 to-violet-50 text-indigo-800 ring-1 ring-inset ring-indigo-600/15"
                       : "text-slate-600"
                   }`}
                 >
-                  <span className="flex items-center gap-2 font-medium">
+                  <span className="flex min-w-0 flex-wrap items-center gap-2 font-medium">
                     {DAFTAR_HARI.find((d) => d.key === r.hari)?.label}
                     {isToday && !r.libur && (
                       <Badge tone="aktif" className="px-1.5 py-0">Hari ini</Badge>
@@ -122,7 +122,7 @@ export function JamOperasionalCard({ editable = false }: { editable?: boolean })
                   {r.libur ? (
                     <Badge tone="ditolak">Libur</Badge>
                   ) : (
-                    <span className="font-semibold tabular-nums">
+                    <span className="whitespace-nowrap font-semibold tabular-nums">
                       {formatJam(r.buka)} – {formatJam(r.tutup)} WIB
                     </span>
                   )}
@@ -177,7 +177,7 @@ export function JamOperasionalCard({ editable = false }: { editable?: boolean })
             key={r.hari}
             className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border border-slate-100 bg-slate-50/60 px-3 py-2"
           >
-            <label className="flex w-20 items-center gap-2 text-sm font-medium text-slate-700">
+            <label className="flex shrink-0 items-center gap-2 text-sm font-medium text-slate-700">
               <input
                 type="checkbox"
                 checked={r.libur}
@@ -188,11 +188,10 @@ export function JamOperasionalCard({ editable = false }: { editable?: boolean })
               />
               Libur
             </label>
-            <span className="hidden w-0 sm:block" />
             <span className="flex-1 text-sm font-semibold text-slate-800">
               {DAFTAR_HARI.find((d) => d.key === r.hari)?.label}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
               <input
                 type="time"
                 value={r.buka}
@@ -200,7 +199,7 @@ export function JamOperasionalCard({ editable = false }: { editable?: boolean })
                 onChange={(e) =>
                   setRows(rows.map((x) => (x.hari === r.hari ? { ...x, buka: e.target.value } : x)))
                 }
-                className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 disabled:opacity-40"
+                className="w-24 rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 disabled:opacity-40 sm:w-auto"
               />
               <span className="text-slate-400">–</span>
               <input
@@ -210,7 +209,7 @@ export function JamOperasionalCard({ editable = false }: { editable?: boolean })
                 onChange={(e) =>
                   setRows(rows.map((x) => (x.hari === r.hari ? { ...x, tutup: e.target.value } : x)))
                 }
-                className="rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 disabled:opacity-40"
+                className="w-24 rounded-lg border border-slate-300 bg-white px-2 py-1.5 text-sm text-slate-900 disabled:opacity-40 sm:w-auto"
               />
             </div>
           </div>

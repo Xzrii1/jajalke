@@ -13,7 +13,7 @@ export function renderStruk(t: Transaksi): string {
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Struk Peminjaman</title>
   <style>
-    body{font-family:'Courier New',Courier,monospace;width:320px;margin:24px auto;color:#111;font-size:12px}
+    body{font-family:'Courier New',Courier,monospace;width:min(320px,92vw);margin:24px auto;color:#111;font-size:12px;overflow-x:hidden}
     .center{text-align:center}
     .title{font-size:14px;font-weight:700;letter-spacing:1px;margin:0}
     .muted{color:#555}
@@ -22,10 +22,10 @@ export function renderStruk(t: Transaksi): string {
     table{width:100%;border-collapse:collapse}
     td{padding:2px 0;vertical-align:top}
     td.label{width:110px;color:#333}
-    td.value{text-align:right;font-weight:600}
+    td.value{text-align:right;font-weight:600;word-break:break-word;overflow-wrap:anywhere}
     .highlight{text-align:center;font-size:13px;font-weight:700;margin:6px 0}
     .footer{margin-top:10px;text-align:center;font-size:10px}
-    .no-print{position:fixed;top:16px;right:16px;padding:8px 16px;font-size:13px;border:none;border-radius:6px;background:#111;color:#fff;cursor:pointer;font-family:Arial,sans-serif}
+    .no-print{position:sticky;top:10px;float:right;margin-bottom:12px;padding:8px 16px;font-size:13px;border:none;border-radius:6px;background:#111;color:#fff;cursor:pointer;font-family:Arial,sans-serif}
     @media print{.no-print{display:none}}
   </style></head><body>
   <button class="no-print" onclick="window.print()">Cetak / Simpan PDF</button>

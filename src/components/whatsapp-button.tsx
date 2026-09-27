@@ -37,7 +37,7 @@ export function WhatsAppFab() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Bantuan via WhatsApp"
-      className="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-200 hover:bg-emerald-600 hover:shadow-xl active:scale-95"
+      className="fixed bottom-4 right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-200 hover:bg-emerald-600 hover:shadow-xl active:scale-95 sm:bottom-5 sm:right-5"
     >
       <svg
         className="h-7 w-7"

@@ -178,14 +178,16 @@ export function ReportPanel() {
       <style>
         body{font-family:Arial,Helvetica,sans-serif;margin:28px;color:#111}
         h1{font-size:20px;margin:0} .sub{color:#555;margin:4px 0 16px}
-        .meta{display:flex;gap:24px;font-size:12px;margin-bottom:14px}
-        table{width:100%;border-collapse:collapse;font-size:11px}
-        th,td{border:1px solid #ccc;padding:6px 8px;text-align:left}
+        .meta{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:12px;margin-bottom:14px}
+        .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+        table{width:100%;min-width:760px;border-collapse:collapse;font-size:11px}
+        th,td{border:1px solid #ccc;padding:6px 8px;text-align:left;white-space:nowrap}
         th{background:#4f46e5;color:#fff;font-weight:600}
         tr:nth-child(even){background:#f3f5ff}
         .footer{margin-top:18px;font-size:11px;color:#555}
         @media print{@page{size:landscape;margin:12mm}}
-        .no-print{position:fixed;top:16px;right:16px;padding:8px 16px;font-size:13px;border:none;border-radius:6px;background:#4f46e5;color:#fff;cursor:pointer}
+        .no-print{position:sticky;top:10px;float:right;margin-bottom:12px;padding:8px 16px;font-size:13px;border:none;border-radius:6px;background:#4f46e5;color:#fff;cursor:pointer}
+        @media print{.no-print{display:none}}
       </style></head><body>
       <button class="no-print" onclick="window.print()">Cetak / Simpan PDF</button>
       <h1>LAPORAN TRANSAKSI PERPUSTAKAAN</h1>
@@ -196,10 +198,10 @@ export function ReportPanel() {
         <span>Dikembalikan: <b>${d.totalKembali}</b></span>
         <span>Denda: <b>${formatRupiah(d.totalDenda)}</b></span>
       </div>
-      <table>
+      <div class="table-wrap"><table>
         <thead><tr><th>No</th><th>Tgl Pinjam</th><th>Jatuh Tempo</th><th>Tgl Kembali</th><th>Peminjam</th><th>Kelas</th><th>Buku</th><th>Status</th><th>Denda</th></tr></thead>
         <tbody>${rowsHtml}</tbody>
-      </table>
+      </table></div>
       <div class="footer">Dokumen ini dibuat secara otomatis oleh aplikasi Perpustakaan Sekolah Digital.</div>
       <script>window.onload=function(){};</` +
       `script>
@@ -355,7 +357,7 @@ function Stat({
     rose: "text-rose-600",
   }[tone];
   return (
-    <div className="rounded-lg bg-slate-50 px-3 py-2">
+    <div className="min-w-0 rounded-lg bg-slate-50 px-3 py-2">
       <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">{label}</p>
       <p className={`mt-0.5 text-lg font-semibold tabular-nums tracking-tight ${tones}`}>{value}</p>
     </div>

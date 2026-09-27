@@ -191,7 +191,7 @@ export default function AdminDashboard() {
       <Reveal delay={0.06}>
         <Card className="card-lift">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="min-w-[260px] flex-1">
+            <div className="min-w-0 flex-1">
               <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                 Pengaturan Denda
               </h2>
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
             {pengaturan?.canEdit ? (
               <div className="w-full sm:w-72">
                 <Field label="Tarif denda (Rp/hari)">
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-2 min-[440px]:flex-row">
                     <Input
                       value={dendaInput}
                       onChange={(e) => setDendaInput(e.target.value)}
@@ -216,6 +216,7 @@ export default function AdminDashboard() {
                       min={0}
                       placeholder="1000"
                       disabled={saving}
+                      className="min-w-0 flex-1"
                     />
                     <Button onClick={handleSaveDenda} disabled={saving || !dendaInput.trim()}>
                       {saving ? "Menyimpan..." : "Simpan"}

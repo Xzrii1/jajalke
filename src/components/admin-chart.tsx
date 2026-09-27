@@ -39,7 +39,7 @@ function CustomTooltip({
   if (!active || !payload || payload.length === 0) return null;
   const rows = payload.filter((p) => p.value > 0);
   return (
-    <div className="rounded-xl border border-slate-200 bg-white/95 px-3 py-2 shadow-xl backdrop-blur">
+    <div className="max-w-[85vw] overflow-hidden rounded-xl border border-slate-200 bg-white/95 px-3 py-2 shadow-xl backdrop-blur">
       <p className="mb-1 text-xs font-semibold text-slate-700">{label}</p>
       {rows.length === 0 ? (
         <p className="text-xs text-slate-400">Tidak ada aktivitas</p>
@@ -163,7 +163,7 @@ export function AdminChart() {
         {!loading && !error && rows.length > 0 && totalPinjam + totalKembali > 0 && (
           <div key={days} className="anim-chart h-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={rows} margin={{ top: 8, right: 0, left: -24, bottom: 0 }}>
+              <AreaChart data={rows} margin={{ top: 8, right: 0, left: -8, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gradPinjam" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#6366f1" stopOpacity={0.45} />

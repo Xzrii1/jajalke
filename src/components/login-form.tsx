@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useActionState, useState } from "react";
+import { motion } from "framer-motion";
 import { login } from "@/app/actions/auth";
 import { Alert } from "@/components/ui";
 import { loginThemes, type LoginTheme } from "@/lib/login-theme";
@@ -69,8 +70,6 @@ function inputBox(hasIcon: boolean, focus: string) {
 const fieldLabel =
   "mb-1.5 block text-[13px] font-semibold text-slate-700";
 
-const roleIndex: Record<string, number> = { siswa: 0, petugas: 1, admin: 2 };
-
 export function LoginForm({
   registered,
   next,
@@ -93,8 +92,6 @@ export function LoginForm({
     { value: "admin" as const, label: "Admin", Icon: ShieldIcon },
   ];
 
-  const activeIndex = roleIndex[role];
-
   return (
     <div>
       {registered && (
@@ -115,13 +112,8 @@ export function LoginForm({
       <div
         role="tablist"
         aria-label="Pilih peran"
-        className="relative mb-6 grid grid-cols-3 gap-1.5 rounded-2xl bg-slate-100 p-1.5 shadow-inner"
+        className="relative mb-6 grid grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1 shadow-inner"
       >
-        <span
-          aria-hidden
-          style={{ transform: `translateX(${activeIndex * 100}%)` }}
-          className={`pointer-events-none absolute inset-y-1.5 left-1.5 w-[calc((100%-0.75rem)/3)] rounded-xl bg-gradient-to-r ${theme.activePill} shadow-md transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]`}
-        />
         {toggleOpts.map(({ value, label, Icon }) => {
           const active = role === value;
           return (
@@ -131,12 +123,23 @@ export function LoginForm({
               role="tab"
               aria-selected={active}
               onClick={() => setRole(value)}
-              className={`relative z-10 inline-flex items-center justify-center gap-1.5 rounded-xl px-2 py-2.5 text-sm font-semibold transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                active ? "text-white" : "text-slate-500 hover:text-slate-800"
-              }`}
+              className="relative grid place-items-center gap-1 rounded-xl px-1.5 py-2 transition-colors duration-300 sm:gap-1.5 sm:px-2 sm:py-2.5"
             >
-              <Icon className="h-4 w-4" />
-              {label}
+              {active && (
+                <motion.span
+                  layoutId="role-capsule"
+                  transition={{ type: "spring", bounce: 0.25, duration: 0.6 }}
+                  className={`absolute inset-0 rounded-xl bg-gradient-to-r ${theme.activePill} shadow-md`}
+                />
+              )}
+              <span
+                className={`relative z-10 inline-flex items-center justify-center gap-1 text-xs font-semibold transition-colors duration-300 sm:gap-1.5 sm:text-sm ${
+                  active ? "text-white" : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                {label}
+              </span>
             </button>
           );
         })}

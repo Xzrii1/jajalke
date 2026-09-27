@@ -14,7 +14,7 @@ export default async function AdminLayout({
   const user = await requirePetugasAdmin();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen overflow-x-clip">
       <AppNav
         brand="Perpus Sekolah"
         userLabel={user.nama_lengkap}

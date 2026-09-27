@@ -92,7 +92,7 @@ export default function SiswaProfil() {
           </div>
         </Card>
 
-        <div className="grid grid-cols-2 gap-4 lg:col-span-2">
+        <div className="grid grid-cols-1 gap-4 min-[430px]:grid-cols-2 lg:col-span-2">
           <Card className="card-lift">
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Total Pinjam
@@ -155,7 +155,7 @@ export default function SiswaProfil() {
                 key={d.transaksi_id}
                 className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-3"
               >
-                <div className="flex min-w-[200px] items-center gap-3">
+                <div className="flex min-w-0 flex-1 items-center gap-3">
                   <div className="shrink-0">
                     {d.cover_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -172,8 +172,8 @@ export default function SiswaProfil() {
                       </span>
                     )}
                   </div>
-                  <div>
-                    <p className="font-semibold text-slate-800">{d.buku}</p>
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-slate-800">{d.buku}</p>
                     <p className="text-xs text-slate-500">
                       Kembali {formatTanggal(d.tanggal_kembali)} · terlambat{" "}
                       {d.hariTelat} hari

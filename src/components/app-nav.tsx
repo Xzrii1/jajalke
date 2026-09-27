@@ -223,7 +223,7 @@ export function AppNav({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-[2px] lg:hidden"
+              className="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-[2px] lg:hidden"
               onClick={() => setOpen(false)}
             />
             <motion.aside
@@ -231,7 +231,7 @@ export function AppNav({
               animate={{ x: 0 }}
               exit={{ x: -288 }}
               transition={{ type: "spring", bounce: 0.15, duration: 0.45 }}
-              className="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-gradient-to-b from-slate-950 via-indigo-950 to-violet-950 lg:hidden"
+              className="fixed inset-y-0 left-0 z-[70] flex w-72 flex-col bg-gradient-to-b from-slate-950 via-indigo-950 to-violet-950 lg:hidden"
             >
               <button
                 type="button"

@@ -87,22 +87,22 @@ export function BookRating({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
       <StarDisplay value={avg} />
-      <span className="text-xs text-slate-500">
+      <span className="shrink-0 text-xs text-slate-500">
         {avg > 0 ? avg.toFixed(1) : "Belum"} ({count})
       </span>
       <button
         type="button"
         onClick={handleList}
-        className="text-xs font-semibold text-indigo-600 hover:underline"
+        className="shrink-0 text-xs font-semibold text-indigo-600 hover:underline"
       >
         Lihat
       </button>
       {canRate && (
         <Button
           variant="ghost"
-          className="px-2 py-1 text-xs"
+          className="ml-auto shrink-0 px-2 py-1 text-xs"
           onClick={handleOpen}
         >
           {myRating ? "Edit Rating" : "Beri Rating"}
