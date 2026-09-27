@@ -409,14 +409,15 @@ html.theme-transition *::after {
 .theme-switch__ray {
   position: absolute;
   fill: #ffffff;
-  opacity: 0.12;
+  opacity: 0.1;
+  z-index: -1;
   pointer-events: none;
 }
 
 /* Titik-titik bulan (muncul saat gelap) */
 .theme-switch__moon-dot {
   position: absolute;
-  fill: #9ca3af;
+  fill: #888888;
   opacity: 0;
   transition: opacity 0.4s;
 }
@@ -449,15 +450,15 @@ html.theme-transition *::after {
   100% { transform: scale(1); }
 }
 
-/* Awan mengambang di langit track */
+/* Awan mengambang di dalam knob (ikut berputar bersama matahari/bulan) */
 .theme-switch__cloud {
   position: absolute;
-  fill: #eef4ff;
+  fill: #eeeeee;
   animation: theme-cloud 6s ease-in-out infinite;
   pointer-events: none;
 }
 .theme-switch__cloud--dark {
-  fill: #c7d3e6;
+  fill: #cccccc;
   animation-delay: 1s;
 }
 @keyframes theme-cloud {
